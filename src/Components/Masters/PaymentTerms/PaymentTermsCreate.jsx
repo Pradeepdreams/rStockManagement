@@ -33,6 +33,8 @@ import Loader from "../../Utils/Loader";
 import TopFilters from "../../Utils/TopFilters";
 import { useToast } from "../../Context/ToastProvider";
 import { useSearch } from "../../Context/SearchContext";
+import SaveButton from "../../Utils/SaveButton";
+import { TbReceiptTax } from "react-icons/tb";
 
 function PaymentTermsCreate() {
   const { collapsed } = useOutletContext();
@@ -217,6 +219,7 @@ function PaymentTermsCreate() {
             buttonName={"Add Payment Terms"}
             setOpen={setOpen}
             handleDialogOpen={handleAddForPaymentTerms}
+            buttonIcon={<TbReceiptTax/>}
           />
 
           <PaymentTermsList
@@ -244,7 +247,7 @@ function PaymentTermsCreate() {
               >
                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-10">
                   <DialogPanel className="relative transform overflow-hidden rounded-lg bg-gray-100 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-7xl sm:p-0">
-                    <div className="bg-[#134b90] text-white p-4 flex items-center justify-between">
+                    <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
                       <h2
                         style={{ fontFamily: "poppins" }}
                         className="font-semibold"
@@ -401,12 +404,13 @@ function PaymentTermsCreate() {
                           )}
 
                           {saveBtn === "save" ? (
-                            <button
-                              onClick={handleSubmitForPaymentTerms}
-                              className="inline-flex items-center rounded-md bg-[#134b90] px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
-                            >
-                              Save
-                            </button>
+                            // <button
+                            //   onClick={handleSubmitForPaymentTerms}
+                            //   className="inline-flex items-center rounded-md bg-[#134b90] px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
+                            // >
+                            //   Save
+                            // </button>
+                            <SaveButton saveFunction={handleSubmitForPaymentTerms} />
                           ) : (
                             !isEditing && (
                               <button

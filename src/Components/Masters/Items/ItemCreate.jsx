@@ -37,6 +37,7 @@ import { useDialogForCategory } from "../../Context/CategoryDialogContext";
 import CatergoryDialogBox from "../Category/CatergoryDialogBox";
 import { useToast } from "../../Context/ToastProvider";
 import { useSearch } from "../../Context/SearchContext";
+import { AiOutlineProduct } from "react-icons/ai";
 
 function ItemCreate({ fetchItemsAfterDialogClose }) {
   const {
@@ -289,6 +290,7 @@ function ItemCreate({ fetchItemsAfterDialogClose }) {
             buttonName={"Add Items"}
             setOpen={setOpen}
             handleDialogOpen={handleAddForItems}
+            buttonIcon={<AiOutlineProduct/>}
           />
 
           <ItemList

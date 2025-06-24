@@ -6,6 +6,9 @@ import DeleteConfirmation from "../../Utils/DeleteConfirmation";
 import AreaDialogBox from "./AreaDialogBox";
 import { useDialogForArea } from "../../Context/AreaDialogContext";
 import { useToast } from "../../Context/ToastProvider";
+import ViewButton from "../../Utils/ViewButton";
+import { FaCode, FaHashtag, FaMapMarkerAlt } from "react-icons/fa";
+import { TbNumbers } from "react-icons/tb";
 
 function AreaList({
   areaPagination,
@@ -77,31 +80,50 @@ function AreaList({
 
 
   const renderRow = (area, index) => (
-    <>
-      <td className="px-6 py-4 whitespace-nowrap">{areaPagination.from + index}</td>
-      <td className="px-6 py-4">{area.name}</td>
-      <td className="px-6 py-4">{area.area_code}</td>
+  <>
+    <td className="px-6 py-4 whitespace-nowrap text-left">
+      <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-medium">
+        <FaHashtag className="text-gray-500" />
+        {areaPagination.from + index}
+      </span>
+    </td>
 
-      <td className="px-6 py-4 text-center">
-        <div className="flex justify-center gap-2">
-          <button
-            className="bg-indigo-500 hover:bg-indigo-500 text-white px-4 py-1 rounded-md text-xs shadow"
-            onClick={(e) => handleViewForArea(e, area.id_crypt)}
-          >
-            View
-          </button>
+    <td className="px-6 py-4 text-left">
+      <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium capitalize">
+        <FaMapMarkerAlt className="text-blue-600" />
+        {area.name || "N/A"}
+      </span>
+    </td>
 
-          <DeleteConfirmation
-            apiType="areas"
-            id_crypt={area.id_crypt}
-            fetchDatas={fetchArea}
-            branchId={branchId}
-            setLoading={setLoading}
-            loading={loading}
-          />
-        </div>
-      </td>
-    </>
+    <td className="px-6 py-4 text-left">
+      <span className="inline-flex items-center gap-1  px-2 py-1 rounded text-sm font-medium">
+        <TbNumbers className="text-yellow-600" />
+        {area.area_code || "N/A"}
+      </span>
+    </td>
+
+    <td className="px-6 py-4 text-left">
+      <div className="flex  gap-2">
+        {/* <button
+          className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-1 rounded-md text-sm shadow flex items-center gap-1"
+          onClick={(e) => handleViewForArea(e, area.id_crypt)}
+        >
+          <FaEye className="w-4 h-4" />
+          View
+        </button> */}
+        <ViewButton onView={handleViewForArea} item={area} />
+
+        <DeleteConfirmation
+          apiType="areas"
+          id_crypt={area.id_crypt}
+          fetchDatas={fetchArea}
+          branchId={branchId}
+          setLoading={setLoading}
+          loading={loading}
+        />
+      </div>
+    </td>
+  </>
   );
 
   return (

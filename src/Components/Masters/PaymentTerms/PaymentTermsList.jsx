@@ -5,6 +5,15 @@ import DeleteConfirmation from "../../Utils/DeleteConfirmation";
 import Pagination from "../../Utils/Pagination";
 import Table from "../../Utils/Table";
 import { useToast } from "../../Context/ToastProvider";
+import ViewButton from "../../Utils/ViewButton";
+import {
+  FaHashtag,
+  FaRegFileAlt,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaInfoCircle,
+} from "react-icons/fa";
+
 
 function GroupList({
   paymentTermsPagination,
@@ -56,37 +65,48 @@ function GroupList({
     "S.No",
     "Payment Terms Name",
     "Active Status",
-    "Description",
     "Actions",
   ];
 
   const renderRow = (paymentTerms, index) => (
     <>
-      <td className="px-6 py-4 whitespace-nowrap">
-        {paymentTermsPagination.payment_terms.from + index}
-      </td>
-      <td className="px-6 py-4">{paymentTerms.name}</td>
-      <td className="px-6 py-4">
-        <span
-          className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-            paymentTerms.active_status == "1"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {paymentTerms.active_status === 1 ? "Active" : "Inactive"}
+      {/* Index with Icon */}
+      <td className="px-6 py-4 whitespace-nowrap text-left">
+        <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 px-2 py-1 rounded  text-sm font-medium">
+          <FaHashtag className="text-gray-500" />
+          {paymentTermsPagination.payment_terms.from + index}
         </span>
       </td>
-      <td className={`px-6 py-4`}>{paymentTerms.description}</td>
-      <td className="px-6 py-4 text-center">
-        <div className="flex justify-center gap-2">
-          <button
-            className="bg-indigo-500 hover:bg-indigo-500 text-white px-4 py-1 rounded-md text-xs shadow"
-            onClick={(e) => handleViewForPaymentTerms(e, paymentTerms.id_crypt)}
-          >
-            View
-          </button>
 
+      {/* Payment Term Name */}
+      <td className="px-6 py-4 text-left">
+        <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded  text-sm font-medium capitalize">
+          <FaRegFileAlt className="text-blue-600" />
+          {paymentTerms.name || "N/A"}
+        </span>
+      </td>
+
+      {/* Status Badge */}
+      <td className="px-6 py-4 text-left">
+        {paymentTerms.active_status == "1" ? (
+          <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded  text-sm font-medium">
+            <FaCheckCircle className="text-green-600" />
+            Active
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded  text-sm font-medium">
+            <FaTimesCircle className="text-red-600" />
+            Inactive
+          </span>
+        )}
+      </td>
+
+     
+
+      {/* Action Buttons */}
+      <td className="px-6 py-4 text-center">
+        <div className="flex gap-2">
+          <ViewButton onView={handleViewForPaymentTerms} item={paymentTerms} />
           <DeleteConfirmation
             apiType="paymentTerms"
             id_crypt={paymentTerms.id_crypt}

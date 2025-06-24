@@ -13,6 +13,7 @@ import {
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useDialogForVendorGroup } from "../../Context/VendorGroupDialogContext";
+import SaveButton from "../../Utils/SaveButton";
 
 
 function VendorGroupsDialogBox({ fetchVendorGroup,isEditing, setIsEditing, fetchVendorGroupAfterDialogClose, vendorFlag }) {
@@ -117,7 +118,7 @@ function VendorGroupsDialogBox({ fetchVendorGroup,isEditing, setIsEditing, fetch
           >
             <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-10">
               <DialogPanel className="relative transform overflow-hidden rounded-lg bg-gray-100  pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl sm:p-0">
-                <div className="bg-[#134b90] text-white p-4 flex items-center justify-between">
+                <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
                   <h2
                     style={{ fontFamily: "poppins" }}
                     className="font-semibold"
@@ -208,12 +209,13 @@ function VendorGroupsDialogBox({ fetchVendorGroup,isEditing, setIsEditing, fetch
                       )}
 
                       {saveBtnForVendorGroup === "save" ? (
-                        <button
-                          onClick={handleSubmitForVendorGroup}
-                          className="inline-flex items-center rounded-md bg-[#134b90] px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
-                        >
-                          Save
-                        </button>
+                        // <button
+                        //   onClick={handleSubmitForVendorGroup}
+                        //   className="inline-flex items-center rounded-md bg-[#134b90] px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
+                        // >
+                        //   Save
+                        // </button>
+                        <SaveButton saveFunction={handleSubmitForVendorGroup} />
                       ) : (
                         !isEditing && (
                           <button

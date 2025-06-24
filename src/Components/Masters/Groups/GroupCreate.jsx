@@ -35,6 +35,7 @@ import { useDialogForGroup } from "../../Context/GroupDialogContext";
 import GroupDialogBox from "./GroupDialogBox";
 import { useToast } from "../../Context/ToastProvider";
 import { useSearch } from "../../Context/SearchContext";
+import { RiUserStarFill } from "react-icons/ri";
 
 function GroupCreate() {
   const { collapsed } = useOutletContext();
@@ -132,6 +133,7 @@ function GroupCreate() {
             buttonName={"Add Groups"}
             setOpen={setOpen}
             handleDialogOpen={handleAddForGroup}
+            buttonIcon={<RiUserStarFill/>}
           />
 
           <GroupList

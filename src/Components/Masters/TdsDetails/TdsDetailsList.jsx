@@ -6,6 +6,8 @@ import Pagination from "../../Utils/Pagination";
 import DeleteConfirmation from "../../Utils/DeleteConfirmation";
 import TdsDetailsDialogBox from "./TdsDetailsDialogBox";
 import { useDialogForTdsDetails } from "../../Context/TdsDetailDialogContext";
+import ViewButton from "../../Utils/ViewButton";
+import { FaHashtag, FaUserTie, FaListOl, FaRupeeSign } from "react-icons/fa";
 
 function TdsDetailsList({
   tdsDetailsPagination,
@@ -68,32 +70,51 @@ function TdsDetailsList({
     }
   };
 
-  const headers = [
-    "S.No",
-    "Name",
-    "Section",
-    "Amount Limit",
-    "Actions",
-  ];
+  const headers = ["S.No", "Name", "Section", "Amount Limit", "Actions"];
 
   const renderRow = (item, index) => (
     <>
-      <td className="px-6 py-4 whitespace-nowrap">
-        {tdsDetailsPagination.from + index}
+      {/* Index with Icon */}
+      <td className="px-6 py-4 whitespace-nowrap text-left">
+        <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-medium">
+          <FaHashtag className="text-gray-500" />
+          {tdsDetailsPagination.from + index}
+        </span>
       </td>
-      <td className="px-6 py-4">{item.name}</td>
-      <td className="px-6 py-4">{item?.tds_section?.name}</td>
-      <td className="px-6 py-4">{item?.tds_section?.amount_limit}</td>
 
+      {/* TDS Name */}
+      <td className="px-6 py-4 text-left">
+        <span className="inline-flex items-center gap-1  px-2 py-1 rounded text-sm font-medium capitalize">
+          <FaUserTie className="text-blue-600" />
+          {item.name || "N/A"}
+        </span>
+      </td>
+
+      {/* TDS Section Name */}
+      <td className="px-6 py-4 text-left">
+        <span className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">
+          <FaListOl className="text-green-600" />
+          {item?.tds_section?.name || "N/A"}
+        </span>
+      </td>
+
+      {/* Amount Limit */}
+      <td className="px-6 py-4 text-left">
+        <span className="inline-flex items-center gap-1 border border-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm font-medium">
+          <FaRupeeSign className="text-yellow-600" />
+          {item?.tds_section?.amount_limit != null
+            ? Number(item.tds_section.amount_limit).toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })
+            : "N/A"}
+        </span>
+      </td>
+
+      {/* Action Buttons */}
       <td className="px-6 py-4 text-center">
-        <div className="flex justify-center gap-2">
-          <button
-            className="bg-indigo-500 hover:bg-indigo-500 text-white px-4 py-1 rounded-md text-xs shadow"
-            onClick={(e) => handleViewForTdsDetails(e, item.id_crypt)}
-          >
-            View
-          </button>
-
+        <div className="flex gap-2">
+          <ViewButton onView={handleViewForTdsDetails} item={item} />
           <DeleteConfirmation
             apiType="tds-details"
             id_crypt={item.id_crypt}

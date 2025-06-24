@@ -455,9 +455,7 @@ export default function Navbar({ collapsed, setCollapsed }) {
                 {collapsed ? (
                   "Dreams"
                 ) : (
-                  <span style={{ color: "var(--hd-bg)" }}>
-                    Dreams Digitall
-                  </span>
+                  <span style={{ color: "var(--hd-bg)" }}>Dreams Digitall</span>
                 )}
               </h2>
             </div>
@@ -600,7 +598,7 @@ export default function Navbar({ collapsed, setCollapsed }) {
               />
 
               <span
-                className="inline-flex items-center rounded-md bg-white px-2 py-1 text-sm font-bold ring-1 ring-yellow-400/20 ring-inset"
+                className="inline-flex items-center rounded-md bg-white px-2 py-1 text-xs font-medium sm:text-sm sm:font-bold ring-1 ring-yellow-400/20 ring-inset"
                 style={{ color: "var(--hd-bg)" }}
               >
                 {user ? user.name : "User"}
@@ -625,7 +623,9 @@ export default function Navbar({ collapsed, setCollapsed }) {
                     } flex cursor-pointer items-center gap-3 w-full text-left px-4 py-2 text-[var(--sidebar-text-size)] transition-all duration-150`
                   }
                 >
-                  {item.icon && <item.icon className="w-4 h-4 text-[var(--hd-bg)]" />}
+                  {item.icon && (
+                    <item.icon className="w-4 h-4 text-[var(--hd-bg)]" />
+                  )}
                   <span
                     className="inline-flex items-center rounded-md bg-green-400/10 px-2 py-1 text-xs font-extrabold ring-1 ring-yellow-400/20 ring-inset"
                     style={{ color: "var(--hd-bg)" }}

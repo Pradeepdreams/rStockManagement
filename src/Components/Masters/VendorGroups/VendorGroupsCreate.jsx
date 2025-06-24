@@ -10,6 +10,7 @@ import VendorGroupsList from "./VendorGroupsList";
 import VendorGroupsDialogBox from "./VendorGroupsDialogBox";
 import { useDialogForVendorGroup } from "../../Context/VendorGroupDialogContext";
 import { useSearch } from "../../Context/SearchContext";
+import { RiUserStarFill } from "react-icons/ri";
 
 function VendorGroupsCreate() {
   const { collapsed } = useOutletContext();
@@ -108,6 +109,7 @@ function VendorGroupsCreate() {
             description={"A list of all vendor groups report"}
             buttonName={"Add Vendor Groups"}
             handleDialogOpen={handleAddForVendorGroup}
+             buttonIcon={<RiUserStarFill/>}
           />
 
           <VendorGroupsList

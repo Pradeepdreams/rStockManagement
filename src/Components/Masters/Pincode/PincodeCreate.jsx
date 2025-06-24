@@ -10,6 +10,7 @@ import PincodeDialogBox from "./PincodeDialogBox";
 import { useDialogForPincode } from "../../Context/PincodeDialogContext";
 import { useToast } from "../../Context/ToastProvider";
 import { useSearch } from "../../Context/SearchContext";
+import { RiUserStarFill } from "react-icons/ri";
 
 function PincodeCreate() {
   const { collapsed } = useOutletContext();
@@ -105,6 +106,7 @@ function PincodeCreate() {
             description={"A list of all pincode report"}
             buttonName={"Add Pincode"}
             handleDialogOpen={handleAddForPincode}
+            buttonIcon={<RiUserStarFill/>}
           />
 
           <PincodeList

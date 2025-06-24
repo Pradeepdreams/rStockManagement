@@ -9,6 +9,7 @@ import LogisticsList from "./LogisticsList";
 import LogisticsDialogBox from "./LogisticsDialogBox";
 import { useToast } from "../../Context/ToastProvider";
 import { useSearch } from "../../Context/SearchContext";
+import { BsMinecartLoaded } from "react-icons/bs";
 
 function LogisticsCreate() {
   const { collapsed } = useOutletContext();
@@ -91,6 +92,7 @@ function LogisticsCreate() {
         buttonName="Add Logistics"
         setOpenDialogForLogistics={setOpenDialogForLogistics}
         handleDialogOpen={handleAddForLogistics}
+        buttonIcon={<BsMinecartLoaded />}
       />
 
       <LogisticsList

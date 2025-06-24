@@ -21,6 +21,7 @@ import { useDialog } from "../../Context/DialogContext";
 import TdsDetailsDialogBox from "./TdsDetailsDialogBox";
 import { useDialogForTdsDetails } from "../../Context/TdsDetailDialogContext";
 import { useSearch } from "../../Context/SearchContext";
+import { TbReceiptTax } from "react-icons/tb";
 
 function TdsDetailsCreate() {
   const { collapsed } = useOutletContext();
@@ -156,6 +157,7 @@ function TdsDetailsCreate() {
         buttonName="Add Tds Details"
         setOpenDialogForTdsDetails={setOpenDialogForTdsDetails}
         handleDialogOpen={handleAddForTdsDetails}
+        buttonIcon={<TbReceiptTax />}
       />
 
       <TdsDetailsList

@@ -6,6 +6,8 @@ import Pagination from "../../Utils/Pagination";
 import DeleteConfirmation from "../../Utils/DeleteConfirmation";
 import { getBranchDataFromBalaSilksDB } from "../../Utils/indexDB";
 import { useToast } from "../../Context/ToastProvider";
+import ViewButton from "../../Utils/ViewButton";
+import { FaHashtag, FaTruck } from "react-icons/fa";
 
 function LogisticsList({
   logisticsPagination,
@@ -57,17 +59,25 @@ function LogisticsList({
 
   const renderRow = (logistics, index) => (
     <>
-      <td className="px-6 py-4 whitespace-nowrap">{logisticsPagination.from + index}</td>
-      <td className="px-6 py-4">{logistics.name ?? "N/A"}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-left">
+        <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 px-2 py-1 roundedtext-sm font-medium">
+          <FaHashtag className="text-gray-500" />
+          {logisticsPagination.from + index}
+        </span>
+      </td>
 
+      {/* Logistics Name with icon */}
+      <td className="px-6 py-4 text-left">
+        <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">
+          <FaTruck className="text-blue-600" />
+          {logistics.name ?? "N/A"}
+        </span>
+      </td>
+
+      {/* Actions */}
       <td className="px-6 py-4 text-center">
-        <div className="flex justify-center gap-2">
-          <button
-            className="bg-indigo-500 hover:bg-indigo-500 text-white px-4 py-1 rounded-md text-xs shadow"
-            onClick={(e) => handleViewForLogistics(e, logistics.id_crypt)}
-          >
-            View
-          </button>
+        <div className="flex  gap-2">
+          <ViewButton onView={handleViewForLogistics} item={logistics} />
 
           <DeleteConfirmation
             apiType="logistics"

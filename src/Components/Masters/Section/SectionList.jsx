@@ -4,6 +4,14 @@ import { toast } from "react-toastify";
 import DeleteConfirmation from "../../Utils/DeleteConfirmation";
 import Pagination from "../../Utils/Pagination";
 import Table from "../../Utils/Table";
+import ViewButton from "../../Utils/ViewButton";
+import {
+  FaHashtag,
+  FaPercent,
+  FaCalendarAlt,
+  FaRupeeSign,
+  FaFileAlt,
+} from "react-icons/fa";
 
 function SectionList({
     sectionPagination,
@@ -81,39 +89,71 @@ function SectionList({
 
 
     const renderRow = (section, index) => (
-        <>
-            <td className="px-6 py-4 whitespace-nowrap">
-                {sectionPagination?.from + index}
-            </td>
-            <td className="px-6 py-4">{section.name}</td>
-            <td className="px-6 py-4">{section.percent_with_pan}</td>
-            <td className="px-6 py-4">{section.percent_without_pan}</td>
-            <td className="px-6 py-4">{section.applicable_date}</td>
-            <td className="px-6 py-4">{section.amount_limit}</td>
+            <>
+  {/* Index with Badge */}
+  <td className="px-6 py-4 whitespace-nowrap text-left">
+    <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-medium">
+      <FaHashtag className="text-gray-500" />
+      {sectionPagination?.from + index}
+    </span>
+  </td>
 
+  {/* Name */}
+  <td className="px-6 py-4 text-left">
+    <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">
+      <FaFileAlt className="text-blue-600" />
+      {section.name || "N/A"}
+    </span>
+  </td>
 
-            <td className="px-6 py-4 text-center">
-                <div className="flex justify-center gap-2">
-                    <button
-                        className="bg-indigo-500 hover:bg-indigo-500 text-white px-4 py-1 rounded-md text-xs shadow"
-                        onClick={(e) =>
-                            handleViewForsection(e, section.id_crypt)
-                        }
-                    >
-                        View
-                    </button>
+  {/* Percent With PAN */}
+  <td className="px-6 py-4 text-left">
+    <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded text-sm font-medium">
+      <FaPercent className="text-green-600" />
+      {section.percent_with_pan ?? "N/A"} 
+    </span>
+  </td>
 
-                    <DeleteConfirmation
-                        apiType="sections"
-                        id_crypt={section.id_crypt}
-                        fetchDatas={fetchSection}
-                        branchId={branchId}
-                        setLoading={setLoading}
-                        loading={loading}
-                    />
-                </div>
-            </td>
-        </>
+  {/* Percent Without PAN */}
+  <td className="px-6 py-4 text-left">
+    <span className="inline-flex items-center gap-1 border border-red-100 text-red-700 px-2 py-1 rounded text-sm font-medium">
+      <FaPercent className="text-red-600" />
+      {section.percent_without_pan ?? "N/A"}
+    </span>
+  </td>
+
+  {/* Applicable Date */}
+  <td className="px-6 py-4 text-left">
+    <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-sm font-medium">
+      <FaCalendarAlt className="text-yellow-600" />
+      {section.applicable_date || "N/A"}
+    </span>
+  </td>
+
+  {/* Amount Limit */}
+  <td className="px-6 py-4 text-left">
+    <span className="inline-flex items-center gap-1  px-2 py-1 rounded text-sm font-medium">
+      <FaRupeeSign className="text-purple-600" />
+      {section.amount_limit ?? "N/A"}
+    </span>
+  </td>
+
+  {/* Actions */}
+  <td className="px-6 py-4 text-center">
+    <div className="flex gap-2">
+      <ViewButton onView={handleViewForsection} item={section} />
+
+      <DeleteConfirmation
+        apiType="sections"
+        id_crypt={section.id_crypt}
+        fetchDatas={fetchSection}
+        branchId={branchId}
+        setLoading={setLoading}
+        loading={loading}
+      />
+    </div>
+  </td>
+</>
     );
 
     return (

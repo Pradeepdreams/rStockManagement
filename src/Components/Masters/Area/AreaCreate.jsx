@@ -21,6 +21,7 @@ import AreaDialogBox from "./AreaDialogBox";
 import { useDialogForArea } from "../../Context/AreaDialogContext";
 import { useToast } from "../../Context/ToastProvider";
 import { useSearch } from "../../Context/SearchContext";
+import { RiUserStarFill } from "react-icons/ri";
 
 function AreaCreate() {
     const { collapsed } = useOutletContext();
@@ -112,6 +113,7 @@ function AreaCreate() {
                 buttonName="Add Area"
                 setOpenDialogForArea={setOpenDialogForArea}
                 handleDialogOpen={handleAddForArea}
+                 buttonIcon={<RiUserStarFill/>}
             />
 
             <AreaList

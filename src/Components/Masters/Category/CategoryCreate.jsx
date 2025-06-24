@@ -10,6 +10,7 @@ import { useDialogForCategory } from "../../Context/CategoryDialogContext";
 import CatergoryDialogBox from "./CatergoryDialogBox";
 import { useToast } from "../../Context/ToastProvider";
 import { useSearch } from "../../Context/SearchContext";
+import { AiOutlineProduct } from "react-icons/ai";
 
 function CategoryCreate() {
   const { collapsed } = useOutletContext();
@@ -160,6 +161,7 @@ function CategoryCreate() {
             description={"A list of all categories report"}
             buttonName={"Add Categories"}
             handleDialogOpen={handleAddForCategories}
+            buttonIcon={<AiOutlineProduct/>}
           />
 
           <CategoryList

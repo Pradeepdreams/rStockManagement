@@ -9,6 +9,7 @@ import GstRegistrationDialogBox from "./GstRegistrationDialogBox";
 import { useDialogForGstRegistration } from "../../Context/GstRegistrationDialogContext";
 import { useToast } from "../../Context/ToastProvider";
 import { useSearch } from "../../Context/SearchContext";
+import { TbReceiptTax } from "react-icons/tb";
 
 function GstRegistrationCreate() {
   const { collapsed } = useOutletContext();
@@ -93,6 +94,7 @@ function GstRegistrationCreate() {
         buttonName="Add Gst Registration Type"
         setOpenDialogForGstRegistration={setOpenDialogForGstRegistration}
         handleDialogOpen={handleAddForGstRegistration}
+        buttonIcon={<TbReceiptTax/>}
       />
 
       <GstRegistrationList
