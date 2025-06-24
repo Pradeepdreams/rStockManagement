@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+
+.scroll-thin::-webkit-scrollbar {
+    width: 1px;
+}
+
+.scroll-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+}
+
+.scroll-thin {
+    scrollbar-width: thin;
+    /* Firefox */
+    scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+}
+
+
+.scroll-hidden::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+  
+  .scroll-hidden {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }

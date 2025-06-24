@@ -1,0 +1,24 @@
+:root {
+  --sidebar-bg: #ffffff;
+  --sidebar-text: #201cc2;
+  --hover-bg: #4745bd;
+  --hover-text: #ffffff;
+  --header-text: #134b90;
+  --button-bg: #0c746f;
+  --button-hover-bg: #0a5f5a;
+  --pdf-bg: #c56d1b;
+  --hover-pdf-bg: #f77d0b;
+  --sidebar-text-size:16px;
+  --placeholder-color: #767676;
+  --hd-bg:#4b0082;
+  --login-bg:#ead7f86b;
+  --table-header-text:#ffffff;
+   --dialog-bgcolor:#4b0082;
+   --savebutton-bgcolor:#4b0082;
+
+  /* fonts */
+  --font-display: 'Poppins', sans-serif;
+--font-sidebar: 'Nunito', sans-serif;
+  --font-body: 'Roboto', sans-serif;
+  --font-button: 'Inter', sans-serif;
+}
