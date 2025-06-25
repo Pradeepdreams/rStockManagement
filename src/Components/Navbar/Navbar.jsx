@@ -548,7 +548,7 @@ export default function Navbar({ collapsed, setCollapsed }) {
         </div>
       </div>
 
-      <div className="fixed top-0 right-0 left-0 bg-[var(--color-zinc-200)] px-4 sm:px-10 py-3 z-30 flex items-center transition-all duration-300">
+      <div className="fixed top-0 right-0 left-0 bg-gray-100 px-4 sm:px-10 py-3 z-30 flex items-center transition-all duration-300">
         <button onClick={() => setSidebarOpen(true)} className="lg:hidden mr-2">
           <Bars3Icon
             className="w-6 h-6"

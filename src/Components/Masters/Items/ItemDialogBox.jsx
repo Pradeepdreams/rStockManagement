@@ -302,7 +302,7 @@ function ItemDialogBox({
           >
             <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-10">
               <DialogPanel className="relative transform overflow-hidden rounded-lg bg-gray-100  pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-7xl sm:p-0">
-                <div className="bg-[var(--dialog_bgcolor)] text-white p-4 flex items-center justify-between">
+                <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
                   <h2
                     style={{ fontFamily: "poppins" }}
                     className="font-semibold"
