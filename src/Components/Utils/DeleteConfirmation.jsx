@@ -67,6 +67,8 @@ function DeleteConfirmation({
         endpoint = `public/api/logistics/${id_crypt}`;
       } else if (apiType == "discount") {
         endpoint = `public/api/discount-on-purchases/${id_crypt}`;
+      } else if (apiType == "customers") {
+        endpoint = `public/api/customers/${id_crypt}`;
       }
 
       const response = await axios.delete(endpoint, {
@@ -81,13 +83,12 @@ function DeleteConfirmation({
         apiType.charAt(0).toUpperCase() +
           apiType.slice(1).toLowerCase() +
           " Deleted successfully!",
-        "success"
+        "error"
       );
       await fetchDatas();
     } catch (error) {
       console.error("Delete error:", error);
       triggerToast("Error", error?.response?.data?.message, "error");
-      // toast.error(error.response?.data?.message || "Error deleting data");
     } finally {
       setShowConfirm(false);
       setLoading(false);

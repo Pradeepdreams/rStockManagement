@@ -212,8 +212,8 @@ function EmployeesCreate() {
         handleDialogOpen={handleAddForEmployees}
         buttonIcon={<FaUsersCog  />}
         pdfDownload={<FaDownload />}
-        pdf={true}
-        pdfText={"Download Employees Report"}
+        // pdf={true}
+        // pdfText={"Download Employees Report"}
 
       />
 

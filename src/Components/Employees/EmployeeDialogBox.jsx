@@ -240,9 +240,9 @@ function EmployeeDialogBox({
                   </div>
                 </div>
                 <div className="m-4 bg-white border rounded-md border-gray-200 p-4">
-                  <h3 className="text-lg font-semibold text-gray-400 mb-4 ">
+                  {/* <h3 className="text-lg font-semibold text-gray-400 mb-4 ">
                     Employees
-                  </h3>
+                  </h3> */}
 
                   <div className="gap-x-5 gap-y-6 bg-gray-50 rounded-md p-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-6">

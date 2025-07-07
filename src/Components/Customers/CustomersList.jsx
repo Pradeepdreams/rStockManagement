@@ -17,36 +17,38 @@ import { FaHashtag, FaMars, FaVenus } from "react-icons/fa6";
 import { IoMdMale } from "react-icons/io";
 import ViewButton from "../Utils/ViewButton";
 
-function EmployeesList({
-  setOpenDialogForEmployee,
-  setSaveBtnForEmployee,
-  setEditIdForEmployee,
-  setEmployeeInputs,
-  setRequiredFields,
-  employeePaginationData,
-  setCurrentPage,
-  fetchEmployeesData,
-  loading,
-  setLoading,
-  setIsEditing,
+function CustomersList({
+        customerPaginationData,
+        setOpenDialogForCustomer,
+        setSaveBtnForCustomer,
+        setCustomerInputs,
+        fetchCustomersData,
+        setEditIdForCustomer,
+        setCurrentPage,
+        setLoading,
+        loading,
+        setIsEditing,
 }) {
-  console.log(employeePaginationData, "list");
+
+
+  console.log(customerPaginationData, "customers");
+  
 
   const navigate = useNavigate();
 
-  const handleEditForEmployee = async (e, id_crypt) => {
+  const handleEditForCustomers = async (e, id_crypt) => {
     e.preventDefault();
-    setOpenDialogForEmployee(true);
+    setOpenDialogForCustomer(true);
     const token = localStorage.getItem("token");
-    setSaveBtnForEmployee("update");
-    setEditIdForEmployee(id_crypt);
+    setSaveBtnForCustomer("update");
+    setEditIdForCustomer(id_crypt);
     setIsEditing(true);
 
     const branchData = await getBranchDataFromBalaSilksDB();
     const branchIds = branchData.map((branch) => branch.branch.id_crypt);
     try {
       const responseForEdit = await axios.get(
-        `public/api/employees/${id_crypt}`,
+        `public/api/customers/${id_crypt}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -55,30 +57,25 @@ function EmployeesList({
         }
       );
 
-      const employeeEditData = responseForEdit.data;
-      console.log(employeeEditData, "edit");
+      const customerEditData = responseForEdit.data;
+      console.log(customerEditData, "edit");
 
-      setEmployeeInputs({
-        first_name: employeeEditData.first_name,
-        last_name: employeeEditData.last_name,
-        gender: employeeEditData.gender,
-        email: employeeEditData.email,
-        phone: employeeEditData.phone,
-        date_of_join: employeeEditData.date_of_join,
-        qualification_id: employeeEditData.qualification_id,
-        is_active: employeeEditData.is_active == true ? "1" : "0",
-        salary: employeeEditData.salary,
-        branch_id: employeeEditData?.user?.branch_data?.[0]?.branch_id, // Get the first branch_id
-        roles:
-          employeeEditData?.user?.branch_data?.[0]?.roles?.map(
-            (role) => role.id
-          ) || [], // Map the roles to get role ids
-        address_line_1: employeeEditData.address_line_1,
-        address_line_2: employeeEditData.address_line_2,
-        country: employeeEditData.country,
-        state: employeeEditData.state,
-        city: employeeEditData.city,
-        pincode_id: employeeEditData.pincode_id,
+      setCustomerInputs({
+       name: customerEditData.name,
+        customer_type: customerEditData.customer_type,
+        email: customerEditData.email,
+        phone: customerEditData.phone,
+        address_line1: customerEditData.address_line1,
+        address_line2: customerEditData.address_line2,
+        city: customerEditData.city,
+        state: customerEditData.state,
+        country: customerEditData.country,
+        pincode: customerEditData.pincode,
+        gst_number: customerEditData.gst_number,
+        gst_type: customerEditData.gst_type,
+        pan_number: customerEditData.pan_number,
+        credit_limit: customerEditData.credit_limit,
+        customer_group: customerEditData.customer_group,
       });
     } catch (error) {
       if (error.response?.status === 401) {
@@ -92,11 +89,9 @@ function EmployeesList({
   const headers = [
     "S.No",
     "Name",
-    "Branch",
-    "Gender",
     "Email",
     "Phone No",
-
+    "Customer Type",
     "Actions",
   ];
 
@@ -108,19 +103,19 @@ function EmployeesList({
         
          <span className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">
                 <FaHashtag className="text-gray-500" />
-               {employeePaginationData.from + index}
+               {customerPaginationData.from + index}
               </span>
       </td>
 
       <td className="px-6 py-4 text-sm text-left text-gray-900 font-semibold flex items-center gap-2">
         <FaUser className="text-blue-600" />
-        {item.first_name ? `${item.first_name} ${item.last_name}` : "N/A"}
+        {item.name ? `${item.name}` : "N/A"}
       </td>
 
       <td className="px-6 py-4 text-sm text-left text-gray-700">
         {/* <span className="inline-flex items-center gap-2 bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium"> */}
         {/* <FaBuilding /> */}
-        {item.user?.branch_data?.[0]?.branch_name || "N/A"}
+        {item.email || "N/A"}
         {/* </span> */}
       </td>
 
@@ -131,52 +126,33 @@ function EmployeesList({
         </span>
       </td> */}
 
-<td className="px-6 py-4 text-sm text-left text-gray-700">
-  <span className="inline-flex items-center gap-2 bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-medium">
-    {item.gender === 'female' && <FaVenus className="w-2 h-4"/>}
-    {item.gender === 'Male' && <IoMdMale className="w-3 h-4" />}
-    {item.gender
-      ? item.gender.charAt(0).toUpperCase() + item.gender.slice(1)
-      : 'N/A'}
-  </span>
-</td>
 
 
       <td className="px-6 py-4 text-sm text-left text-gray-700">
         <span className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">
-          <FaEnvelope />
-          {item.email || "N/A"}
+          {/* <FaEnvelope /> */}
+          {item.phone || "N/A"}
         </span>
       </td>
 
       <td className="px-6 py-4 text-sm text-left text-gray-700">
         <span className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
-          <FaPhone />
-          {item.phone || "N/A"}
+          {/* <FaPhone /> */}
+          {item.customer_type || "N/A"}
         </span>
       </td>
 
       <td className="px-6 py-4">
         <div className="flex items-center gap-2">
-        {
-          /*
- <button
-            className="bg-[var(--hd-bg)] hover:bg-white hover:text-[var(--hd-bg)] border border-[var(--hd-bg)] text-white px-3 py-1 rounded text-xs transition duration-200 font-semibold"
-            onClick={(e) => handleEditForEmployee(e, item.id_crypt)}
-          >
-            View
-          </button>
-          */
-
-        }
+      
          
-          <ViewButton onView={handleEditForEmployee} item={item} />
+          <ViewButton onView={handleEditForCustomers} item={item} />
 
 
           <DeleteConfirmation
-            apiType="employee"
+            apiType="customers"
             id_crypt={item.id_crypt}
-            fetchDatas={fetchEmployeesData}
+            fetchDatas={fetchCustomersData}
             setLoading={setLoading}
             loading={loading}
           />
@@ -189,15 +165,15 @@ function EmployeesList({
     <>
       <Table
         headers={headers}
-        data={employeePaginationData?.data || []}
+        data={customerPaginationData.data|| []}
         renderRow={renderRow}
       />
       <Pagination
-        meta={employeePaginationData}
+        meta={customerPaginationData}
         onPageChange={(page) => setCurrentPage(page)}
       />
     </>
   );
 }
 
-export default EmployeesList;
+export default CustomersList;

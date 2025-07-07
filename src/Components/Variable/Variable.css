@@ -1,20 +1,30 @@
 :root {
-  --sidebar-bg: #ffffff;
-  --sidebar-text: #201cc2;
+  /* --sidebar-bg: #ffffff; */
+  --sidebar-bg: #111827;
+  /* --sidebar-bg: #22274f; */
+  --navbar-hover-bg: #22274f;
+  /* --sidebar-text: #201cc2; */
+  --sidebar-text: #ffffff;
+  --logo-text: #ffffff;
+  /* --icon-color:#4f46e5; */
+  /* --icon-color:#2015e4; */
+  --icon-color:#ffffff;
   --hover-bg: #4745bd;
   --hover-text: #ffffff;
   --header-text: #134b90;
-  --button-bg: #0c746f;
-  --button-hover-bg: #0a5f5a;
   --pdf-bg: #c56d1b;
   --hover-pdf-bg: #f77d0b;
   --sidebar-text-size:16px;
   --placeholder-color: #767676;
   --hd-bg:#4b0082;
   --login-bg:#ead7f86b;
-  --table-header-text:#ffffff;
-   --dialog-bgcolor:#4b0082;
-   --savebutton-bgcolor:#4b0082;
+  /* --table-header-text:#ffffff; */
+  --table-header-text:#030712;
+  --table-header-bg:#e5e7eb;
+   /* --dialog-bgcolor:#4b0082; */
+   /* --dialog-bgcolor:#afb2ce; */
+   /* --savebutton-bgcolor:#4b0082; */
+   --savebutton-bgcolor:#2511d6;
 
   /* fonts */
   --font-display: 'Poppins', sans-serif;

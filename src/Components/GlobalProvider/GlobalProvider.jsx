@@ -20,6 +20,8 @@ import { TdsDetailsDialogProvider } from "../Context/TdsDetailDialogContext";
 import { ToastProvider } from "../Context/ToastProvider";
 import { VendorGroupDialogProvider } from "../Context/VendorGroupDialogContext";
 import { DiscountDialogProvider } from "../Context/DiscountDialogContext";
+import { CustomerDialogProvider } from "../Context/CustomerDilaogContext";
+import { SalesDialogProvider } from "../Context/SalesDialogContext";
 
 
 
@@ -45,7 +47,11 @@ const GlobalProvider = ({ children }) => {
                                     <LogisticsDialogProvider>
                                       <PurchaseOrderEntriesProvider>
                                         <DiscountDialogProvider>
+                                          <CustomerDialogProvider>
+                                            <SalesDialogProvider>
                                       {children}
+                                            </SalesDialogProvider>
+                                      </CustomerDialogProvider>
                                       </DiscountDialogProvider>
                                       </PurchaseOrderEntriesProvider>
                                     </LogisticsDialogProvider>

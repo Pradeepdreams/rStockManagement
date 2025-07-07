@@ -759,14 +759,14 @@ const handleCloseForStockentryDialogBox = () => {
       ) : (
         <>
           <HeadersAndAddButton
-            title={"Stock Entry"}
+            title={"Product Entry"}
             description={"A list of all stock entries"}
-            buttonName={"Add Stock Entry"}
+            buttonName={"Add Product"}
             handleDialogOpen={handleAddStockEntry}
             buttonIcon={<BsBodyText />}
-                    pdf={true}
-                    pdfDownload={<FaDownload />}
-                    pdfText={"Download Stock Entry Reports"}
+                    // pdf={true}
+                    // pdfDownload={<FaDownload />}
+                    // pdfText={"Download Stock Entry Reports"}
           />
         </>
       )}

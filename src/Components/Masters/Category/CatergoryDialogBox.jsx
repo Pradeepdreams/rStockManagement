@@ -383,8 +383,8 @@ function CatergoryDialogBox({
                     </div>
                   </div>
                 </div>
-                <div className="m-4 bg-white border rounded-md border-gray-200 p-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-6 gap-5 sm:p-6 rounded-md ">
+                <div className="m-4 bg-white border rounded-md border-gray-200 p-6">
+                  <div className="grid grid-cols-1  gap-5 p-2 rounded-md ">
                     <div className="w-full sm:col-span-1">
                       <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
                         <UserCircleIcon className="h-5 w-5 text-gray-400" />
@@ -411,240 +411,13 @@ function CatergoryDialogBox({
                       )}
                     </div>
 
-                    <div className="w-full sm:col-span-3">
-                      <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
-                        <UserCircleIcon className="h-5 w-5 text-gray-400" />
-                        <h4>
-                          Attributes <span className="text-red-400">*</span>
-                        </h4>
-                      </label>
-
-                      <Select
-                        isMulti
-                        name="attributes"
-                        options={renderAttributeData?.map((item) => ({
-                          value: item.id,
-                          label: item.name,
-                        }))}
-                        value={renderAttributeData
-                          ?.filter((item) =>
-                            categoryInputs?.attributes?.includes(item.id)
-                          )
-                          .map((item) => ({
-                            value: item.id,
-                            label: item.name,
-                          }))}
-                        onChange={(selectedOptions) => {
-                          handleChangeForCategories({
-                            target: {
-                              name: "attributes",
-                              value: selectedOptions.map(
-                                (option) => option.value
-                              ),
-                            },
-                          });
-                        }}
-                        className="w-full mt-2"
-                        classNamePrefix="select"
-                        isDisabled={isEditing}
-                      />
-                      {requiredFields?.attributes && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {requiredFields.attributes[0]}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="w-full sm:col-span-2">
-                      <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
-                        <PercentBadgeIcon className="h-5 w-5 text-gray-400" />
-                        <h4 className="">
-                          GST Percentage <span className="text-red-400">*</span>
-                        </h4>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="GST Percentage"
-                        name="gst_percent"
-                        onChange={handleChangeForCategories}
-                        value={categoryInputs?.gst_percent}
-                        disabled={isEditing}
-                        className={`mt-1 w-full bg-white ${
-                          isEditing && "opacity-50 cursor-not-allowed"
-                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
-                      />
-
-                      {requiredFields?.gst_percent && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {requiredFields.gst_percent[0]}
-                        </p>
-                      )}
-                    </div>
+                 
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 sm:px-6 gap-5 mt-4 sm:mt-1 ">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        GST Applicable Date{" "}
-                        <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="date"
-                        name="gst_applicable_date"
-                        value={categoryInputs?.gst_applicable_date || ""}
-                        placeholder="GST Applicable Date"
-                        min={new Date().toISOString().split("T")[0]}
-                        onChange={handleChangeForCategories}
-                        className={`mt-1 w-full bg-white ${
-                          isEditing && "opacity-50 cursor-not-allowed"
-                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
-                        disabled={isEditing}
-                      />
-                      {requiredFields?.gst_applicable_date && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {requiredFields.gst_applicable_date[0]}
-                        </p>
-                      )}
-                    </div>
+                  
 
-                    <div>
-                      <label className="flex items-center  block text-sm font-medium text-gray-700 mb-1">
-                        <NumberedListIcon className="h-5 w-5 text-gray-400" />
-                        <h4>
-                          HSN Code <span className="text-red-400">*</span>
-                        </h4>
-                      </label>
-                      <div>
-                        <input
-                          type="text"
-                          placeholder="HSN Code"
-                          name="hsn_code"
-                          onChange={handleChangeForCategories}
-                          value={categoryInputs?.hsn_code}
-                          disabled={isEditing}
-                          className={`mt-1 w-full bg-white ${
-                            isEditing && "opacity-50 cursor-not-allowed"
-                          } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
-                        />
-                        {hsnCodeError && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {hsnCodeError}
-                          </p>
-                        )}
-                      </div>
-                      {requiredFields?.hsn_code && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {requiredFields.hsn_code[0]}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        HSN Applicable Date{" "}
-                        <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="date"
-                        name="hsn_applicable_date"
-                        value={categoryInputs?.hsn_applicable_date || ""}
-                        placeholder="HSN Applicable Date"
-                        min={new Date().toISOString().split("T")[0]}
-                        onChange={handleChangeForCategories}
-                        className={`mt-1 w-full bg-white ${
-                          isEditing && "opacity-50 cursor-not-allowed"
-                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
-                        disabled={isEditing}
-                      />
-                      {requiredFields?.hsn_applicable_date && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {requiredFields.hsn_applicable_date[0]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 sm:px-6 gap-5 mt-5">
-                    {/* Input 5 */}
-                    <div>
-                      <label className="flex items-center  block text-sm font-medium text-gray-700 mb-1">
-                        <CheckBadgeIcon className="h-5 w-5 text-gray-400" />
-                        <h4>Active Status</h4>
-                      </label>
-                      <select
-                        name="active_status"
-                        onChange={handleChangeForCategories}
-                        value={categoryInputs?.active_status}
-                        disabled={isEditing}
-                        className={`mt-1 w-full bg-white ${
-                          isEditing && "opacity-50 cursor-not-allowed"
-                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
-                      >
-                        <option value="" disabled>
-                          Select Status
-                        </option>
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                      </select>
-                    </div>
-
-                    {/* Margin From */}
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                        <NumberedListIcon className="h-5 w-5 text-gray-400" />
-                        <span>Margin From</span>
-                        <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        name="margin_percent_from"
-                        placeholder="Margin Percent From"
-                        onChange={handleChangeForCategories}
-                        value={categoryInputs.margin_percent_from}
-                        disabled={isEditing}
-                        min={50}
-                        max={90}
-                        className={`mt-1 w-full bg-white ${
-                          isEditing && "opacity-50 cursor-not-allowed"
-                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-                      />
-                      {requiredFields?.margin_percent_from && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {requiredFields?.margin_percent_from}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Margin To */}
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                        <NumberedListIcon className="h-5 w-5 text-gray-400" />
-                        <span>Margin To</span>
-                        <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        name="margin_percent_to"
-                        placeholder="Margin Percent To"
-                        onChange={handleChangeForCategories}
-                        value={categoryInputs?.margin_percent_to}
-                        disabled={isEditing}
-                        min={50}
-                        max={90}
-                        className={`mt-1 w-full bg-white ${
-                          isEditing && "opacity-50 cursor-not-allowed"
-                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-                      />
-                      {requiredFields?.margin_percent_to && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {requiredFields?.margin_percent_to}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-3 sm:px-6 gap-5 mt-5">
-                    <div className="w-full sm:col-span-5">
+                  {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-3 sm:px-6 gap-5 mt-5"> */}
+                    <div className="w-full sm:col-span-1 p-2">
                       <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
                         <Bars3CenterLeftIcon className="h-5 w-5 text-gray-400" />
                         <h4>Description</h4>
@@ -662,7 +435,7 @@ function CatergoryDialogBox({
                         } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
                       />
                     </div>
-                  </div>
+                  {/* </div> */}
 
                   <div className="flex items-center justify-end gap-x-4 p-5">
                     {!isEditing && (

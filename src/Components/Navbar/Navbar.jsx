@@ -114,6 +114,18 @@ export default function Navbar({ collapsed, setCollapsed }) {
       permission: "view_employees",
     },
     {
+      name: "Customers",
+      href: "/customers",
+      icon: GrUserWorker,
+      // permission: "view_employees",
+    },
+    {
+      name: "Sales",
+      href: "/sales",
+      icon: GrUserWorker,
+      // permission: "view_employees",
+    },
+    {
       name: "Purchase Orders",
       href: "/purchase-order",
       icon: BsFillCartPlusFill,
@@ -126,7 +138,7 @@ export default function Navbar({ collapsed, setCollapsed }) {
       // permission: "view_purchase_order",
     },
     {
-      name: "Stock Entries",
+      name: "Product Entries",
       href: "/stock-entry",
       icon: BsBodyText,
       // permission: "view_purchase_order",
@@ -378,7 +390,7 @@ export default function Navbar({ collapsed, setCollapsed }) {
                         "flex items-center gap-3 p-2 rounded-md w-full text-left font-semibold"
                       )}
                     >
-                      {item.icon && <item.icon className="w-5 h-5" />}
+                      {item.icon && <item.icon className="w-5 h-5 text-[var(--icon-color)]" />}
                       <span>{item.name}</span>
                       <ChevronRightIcon
                         className={classNames(
@@ -422,7 +434,7 @@ export default function Navbar({ collapsed, setCollapsed }) {
                       "flex items-center gap-3 p-2 rounded-md font-semibold"
                     )}
                   >
-                    {item.icon && <item.icon className="w-5 h-5" />}
+                    {item.icon && <item.icon className="w-5 h-5  text-[var(--icon-color)]" />}
                     <span>{item.name}</span>
                   </Link>
                 )}
@@ -439,13 +451,13 @@ export default function Navbar({ collapsed, setCollapsed }) {
         )}
         style={{
           backgroundColor: "var(--sidebar-bg)",
-          color: "var(--sidebar-text)",
+          // color: "var(--sidebar-text)",
           fontFamily: "var(--button-font-family)",
         }}
         onMouseEnter={() => setCollapsed(false)}
         onMouseLeave={() => setCollapsed(true)}
       >
-        <div className="flex flex-col p-4 gap-6 w-full">
+        {/* <div className="flex flex-col p-4 gap-6 w-full">
           <div className="flex items-center ">
             <div className="flex items-center gap-2">
               <h2
@@ -455,7 +467,7 @@ export default function Navbar({ collapsed, setCollapsed }) {
                 {collapsed ? (
                   "Dreams"
                 ) : (
-                  <span style={{ color: "var(--hd-bg)" }}>Dreams Digitall</span>
+                  <span style={{ color: " var(--icon-color)" }}>Dreams Digitall</span>
                 )}
               </h2>
             </div>
@@ -488,7 +500,7 @@ export default function Navbar({ collapsed, setCollapsed }) {
                             "flex items-center text-md gap-3 p-2 rounded-md w-full text-left font-semibold"
                           )}
                         >
-                          <Icon className="w-5 h-5" />
+                          <Icon className="w-5 h-5 text-[var(--icon-color)]" />
                           {!collapsed && <span>{name}</span>}
                           {!collapsed && (
                             <ChevronRightIcon
@@ -545,10 +557,132 @@ export default function Navbar({ collapsed, setCollapsed }) {
               return null;
             })}
           </nav>
-        </div>
+        </div> */}
+
+
+        <div
+  className={classNames(
+    "group hidden lg:flex fixed inset-y-0 left-0 z-40 transition-all duration-500 overflow-y-auto scroll-hidden",
+    collapsed ? "w-20" : "w-72"
+  )}
+  style={{
+    backgroundColor: "var(--sidebar-bg)",
+    color: "var(--sidebar-text)",
+    fontFamily: "var(--button-font-family)",
+  }}
+  onMouseEnter={() => setCollapsed(false)}
+  onMouseLeave={() => setCollapsed(true)}
+>
+  <div className="flex flex-col p-4 gap-6 w-full">
+    <div className="flex items-center ">
+      <div className="flex items-center gap-2">
+        <h2
+          className="text-md font-extrabold inline-block mb-3"
+          style={{ color: "var(--logo-text)" }}
+        >
+          {collapsed ? (
+            "Dreams"
+          ) : (
+            <span style={{ color: " var(--logo-text)" }}>
+              Dreams Digitall
+            </span>
+          )}
+        </h2>
+      </div>
+    </div>
+
+    <nav className="flex flex-col space-y-2 mt-4">
+      {navigation.map((item) => {
+        const {
+          name,
+          href,
+          children,
+          current,
+          expanded,
+          icon: Icon,
+        } = item;
+
+        const isCurrent = current
+          ? "items-center text-md text-white bg-[var(--navbar-hover-bg)] font-semibold"
+          : "text-[var(--sidebar-text)] text-md hover:bg-[var(--navbar-hover-bg)] hover:text-[var(--hover-text)]";
+
+        if ((children && children.length > 0) || href) {
+          return (
+            <div key={name}>
+              {children && children.length > 0 ? (
+                <>
+                  <button
+                    onClick={() => toggleSubmenu(item)}
+                    className={classNames(
+                      isCurrent,
+                      "flex items-center text-md gap-3 p-2 rounded-md w-full text-left font-semibold"
+                    )}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: "var(--icon-color)" }} />
+                    {!collapsed && <span>{name}</span>}
+                    {!collapsed && (
+                      <ChevronRightIcon
+                        className={classNames(
+                          "w-4 h-4 ml-auto transition-transform",
+                          expanded && "rotate-90"
+                        )}
+                        style={{ color: "var(--icon-color)" }}
+                      />
+                    )}
+                  </button>
+
+                  {expanded && !collapsed && (
+                    <div className="pl-6 mt-1 space-y-1">
+                      {children.map((subItem) => {
+                        const {
+                          name: subItemName,
+                          href: subItemHref,
+                          current: subItemCurrent,
+                        } = subItem;
+                        return (
+                          <Link
+                            key={subItemName}
+                            to={subItemHref}
+                            className={classNames(
+                              subItemCurrent
+                                ? "items-center text-md text-[var(--hover-text)] bg-[var(--navbar-hover-bg)] font-semibold"
+                                : "text-[var(--hover-text)] text-md hover:bg-[var(--navbar-hover-bg)] hover:text-[var(--hover-text)]",
+                              "flex items-center text-[var(--sidebar-text-size)] gap-3 p-2 rounded-full font-semibold"
+                            )}
+                          >
+                            <Icon className="w-4 h-4" style={{ color: "var(--icon-color)" }} />
+                            <span>{subItemName}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Link
+                  to={href}
+                  className={classNames(
+                    isCurrent,
+                    "flex items-center text-[var(--sidebar-text-size)] gap-3 p-2 rounded-full font-semibold"
+                  )}
+                >
+                  <Icon className="w-5 h-5" style={{ color: "var(--icon-color)" }} />
+                  {!collapsed && <span>{name}</span>}
+                </Link>
+              )}
+            </div>
+          );
+        }
+        return null;
+      })}
+    </nav>
+  </div>
+</div>
+
+
       </div>
 
-      <div className="fixed top-0 right-0 left-0 bg-gray-100 px-4 sm:px-10 py-3 z-30 flex items-center transition-all duration-300">
+      <div className="fixed top-0 right-0 left-0 bg-white px-4 sm:px-10 py-3 z-30 flex items-center transition-all duration-300">
         <button onClick={() => setSidebarOpen(true)} className="lg:hidden mr-2">
           <Bars3Icon
             className="w-6 h-6"

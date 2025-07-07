@@ -66,19 +66,19 @@ triggerGlobalToast("Error", "Please check your internet connection.", "error");
     }
 
     // ✅ Auth checks
-    if (window.location.pathname !== "/") {
-      const unauthorized =
-        status === 403 || message?.toLowerCase() === "unauthorized";
-      const unauthenticated =
-        status === 401 || message?.toLowerCase() === "unauthenticated";
+    // if (window.location.pathname !== "/") {
+    //   const unauthorized =
+    //     status === 403 || message?.toLowerCase() === "unauthorized";
+    //   const unauthenticated =
+    //     status === 401 || message?.toLowerCase() === "unauthenticated";
 
-      if (unauthorized) {
-        window.location.href = "/unauthorized";
-      } else if (unauthenticated) {
-        localStorage.removeItem("token");
-        window.location.href = "/";
-      }
-    }
+    //   if (unauthorized) {
+    //     window.location.href = "/unauthorized";
+    //   } else if (unauthenticated) {
+    //     localStorage.removeItem("token");
+    //     window.location.href = "/";
+    //   }
+    // }
 
     return Promise.reject(error);
   }

@@ -10,6 +10,16 @@ import {
   LineElement,
 } from "chart.js";
 import {
+  // Line,
+  // Bar,
+  Doughnut,
+  Pie,
+  Radar,
+  PolarArea,
+  // Bubble,
+  Scatter,
+} from "react-chartjs-2";
+import {
   MdWbSunny,
   MdNightsStay,
   MdBrightness4,
@@ -25,6 +35,10 @@ import { toast } from "react-toastify";
 import { FaCartArrowDown, FaCartPlus, FaCartShopping } from "react-icons/fa6";
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/16/solid";
 import { href } from "react-router-dom";
+import MiniChart from "./MiniChart";
+import { PurchaseOrdersChart } from "./Charts/PurchaseOrderChart";
+import { PurchaseEntriesChart } from "./Charts/PurchaseEntriesChart";
+import { EyeIcon } from "@heroicons/react/24/outline";
 
 // Register Chart.js components
 ChartJS.register(
@@ -95,9 +109,8 @@ export default function Dashboard() {
           },
         });
         console.log(response, "response");
-        
+
         const rawVendorData = response.data.vendors.data;
-        
 
         setVendorData(rawVendorData);
 
@@ -112,8 +125,6 @@ export default function Dashboard() {
         );
         console.log(responseForPoDatas, "responseForPoDatas");
         setPurchaseOrderDatas(responseForPoDatas?.data?.purchase_orders.data);
-
-        
       } catch (error) {
         toast.error(
           error.response?.data?.message || "Failed to fetch employee data"
@@ -162,9 +173,7 @@ export default function Dashboard() {
 
   const greeting = getGreeting();
 
-  const labels = vendorData.map(
-    (emp) => `${emp.first_name} ${emp.last_name}`
-  );
+  const labels = vendorData.map((emp) => `${emp.first_name} ${emp.last_name}`);
 
   const isSmallScreen = window.innerWidth < 640;
 
@@ -177,9 +186,7 @@ export default function Dashboard() {
         backgroundColor: vendorData.map((_, i) =>
           transparentize(barColors[i % barColors.length], 0.5)
         ),
-        borderColor: vendorData.map(
-          (_, i) => barColors[i % barColors.length]
-        ),
+        borderColor: vendorData.map((_, i) => barColors[i % barColors.length]),
         borderWidth: 1,
         borderRadius: isSmallScreen ? 6 : 100,
         borderSkipped: false,
@@ -262,48 +269,54 @@ export default function Dashboard() {
       id: 1,
       name: "Total Purchase Orders",
       stat: "71,897",
-      icon: FaCartPlus,
       change: "122",
       changeType: "increase",
-      bgColor: "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500",
-      // bgColor: "bg-gradient-to-r from-[#cad0ff] to-[#e3e3e3]",
       textColor: "text-white",
-      bgImg: "none",
+      bgColor: "bg-indigo-600",
       href: "/purchase-order",
+      chartType: "bar", // 👈 use "bar" here
+      chartData: [50, 52, 55, 60, 65, 69, 71],
+      chartColor: "#3B82F6", // Tailwind blue-500
     },
     {
       id: 2,
       name: "Total Purchase Entries",
       stat: "58.16%",
-      icon: FaCartArrowDown,
       change: "5.4%",
       changeType: "increase",
-      bgColor: "bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800",
       textColor: "text-white",
+      bgColor: "bg-indigo-600",
       href: "/purchase-order-entries",
-    },
+      chartType: "radar", // 👈 use "bar" here
 
+      chartData: [40, 42, 44, 48, 50, 53, 58],
+      chartColor: "#3B82F6", // blue-500
+    },
     {
       id: 3,
       name: "Overall Items",
       stat: "24.57%",
-      icon: FaCartShopping,
       change: "3.2%",
       changeType: "decrease",
-      bgColor: "bg-gradient-to-r from-gray-900 via-gray-700 to-gray-500",
       textColor: "text-white",
+      bgColor: "bg-indigo-600",
       href: "/masters/items",
+      chartType: "bubble",
+      chartData: [30, 29, 28, 27, 26, 25, 45],
+      chartColor: "#EF4444", // red-500
     },
     {
       id: 4,
       name: "Total Stock Entries",
       stat: "71,897",
-      icon: FaCartPlus,
       change: "122",
       changeType: "increase",
-      bgColor: "bg-gradient-to-r from-violet-500 via-purple-600 to-violet-700",
       textColor: "text-white",
+      bgColor: "bg-indigo-600",
+      chartType: "doughnut",
       href: "/stock-entry",
+      chartData: [60, 62, 64, 67, 69, 70, 71],
+      chartColor: "#22C55E", // green-500
     },
   ];
 
@@ -324,7 +337,7 @@ export default function Dashboard() {
         </span>
       </div>
 
-      <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mt-10">
+      {/* <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mt-10">
         {stats.map((item) => (
           <div
             key={item.id}
@@ -342,7 +355,7 @@ export default function Dashboard() {
             </dt>
             <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
               <p
-                className={`text-2xl font-semibold text-gray-900  ${item.textColor}`}
+                className={`text-2xl font-semibold  text-white  ${item.textColor}`}
               >
                 {item.stat}
               </p>
@@ -389,71 +402,144 @@ export default function Dashboard() {
             </dd>
           </div>
         ))}
+      </dl> */}
+
+      <dl className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((item) => (
+          <div
+            key={item.id}
+            className="relative overflow-hidden rounded-xl bg-white shadow-md p-6"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-sm  text-black font-medium">{item.name}</p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {item.stat}
+                </p>
+                <p
+                  className={classNames(
+                    item.changeType === "increase"
+                      ? "text-green-600"
+                      : "text-red-600",
+                    "mt-1 text-sm font-medium flex items-center"
+                  )}
+                >
+                  {item.changeType === "increase" ? (
+                    <ArrowUpIcon className="h-4 w-4 mr-1" aria-hidden="true" />
+                  ) : (
+                    <ArrowDownIcon
+                      className="h-4 w-4 mr-1"
+                      aria-hidden="true"
+                    />
+                  )}
+                  {item.change} last week
+                </p>
+              </div>
+              {/* <div className="h-12 w-12 rounded-md bg-[var(--savebutton-bgcolor)] flex items-center justify-center">
+          <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
+        </div> */}
+              <div className="h-12 w-12">
+                <MiniChart
+                  type={item.chartType}
+                  dataPoints={item.chartData}
+                  borderColor={item.chartColor}
+                />
+              </div>
+            </div>
+
+            {/* Optional mini line chart placeholder */}
+            <div className="mt-4">
+              <MiniChart
+                type={item.chartType || "doughnut"} // or "bar", "doughnut", etc.
+                dataPoints={item.chartData}
+                borderColor={item.chartColor}
+                backgroundColor="rgba(59,130,246,0.3)" // Optional, for bar charts
+              />
+            </div>
+          </div>
+        ))}
       </dl>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-22">
-        <div className="col-span-1 w-full max-w-full p-6 bg-white rounded-lg shadow-md">
-         <div className="bg-blue-300 p-4 rounded-lg">
-           <h3 className="text-xl font-semibold text-gray-800 mb-2">
-            Employees
-          </h3>
-          <p className="text-gray-600 text-sm mb-4">
-            A graph showing the number of employees and their performance over
-            time
-          </p>
-         </div>
+      {/* Stock entry chart */}
 
-          <div>
-            <Bar
-              data={vendorChartData}
-              plugins={[stripedBackground]}
-              options={vendorChartOptions}
-              height={300}
-            />
+      <div className="bg-indigo-500 text-white py-18 sm:py-22 mt-10 rounded-md relative overflow-hidden">
+        {/* View Button - top right */}
+
+        <div className="mx-auto max-w-7xl px-6 text-white">
+          <div className="grid grid-cols-1 lg:grid-cols-2 items-start gap-4">
+            {/* LEFT: Content */}
+            <div className="flex flex-col">
+              <h2 className="text-5xl font-semibold tracking-tight  text-white sm:text-5xl">
+                Stock Overview
+              </h2>
+
+              <p className="mt-8 text-lg font-medium text-pretty  text-white sm:text-xl/8">
+                Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui
+                lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat
+                fugiat.
+              </p>
+
+              {/* Total Count */}
+              <div className="mt-6">
+                <p className="text-2xl font-semibold text-white">
+                  Total Stock Count:{" "}
+                  <span className="bg-white px-2 py-1 rounded text-indigo-800 font-semibold">
+                    2,345
+                  </span>
+                </p>
+              </div>
+
+              {/* This Month Summary */}
+              <div className="mt-4">
+                <p className="text-base text-white font-medium">This Month</p>
+                <div className="mt-2 flex flex-col sm:flex-row gap-4 sm:gap-10">
+                  <div className="flex items-center gap-2">
+                    <ArrowUpIcon className="h-5 w-5 text-green-400" />
+                    <p className="inline-flex items-center gap-1 text-sm font-medium bg-green-100 text-green-800 px-3 py-1 rounded-full">
+                      Stock Entries:{" "}
+                      <span className="text-green-600 font-semibold">+312</span>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ArrowDownIcon className="h-5 w-5 text-red-400" />
+                    <p className="inline-flex items-center gap-1 text-sm font-medium bg-red-100 text-red-800 px-3 py-1 rounded-full">
+                      Sales Entries:{" "}
+                      <span className="text-red-600 font-semibold">-174</span>
+                    </p>
+                  </div>
+                </div>
+                <button className="mx-auto mt-4 inline-flex items-center gap-1 bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition">
+                  <EyeIcon className="w-5 h-5" />
+                  View
+                </button>
+              </div>
+            </div>
+
+            {/* RIGHT: Bar Chart */}
+            <div className="h-[300px] w-full bg-white rounded-md p-4">
+              <Bar
+                data={vendorChartData}
+                options={{ ...vendorChartOptions, maintainAspectRatio: false }}
+              />
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className="col-span-1 w-full max-w-full p-6 bg-white rounded-lg shadow-md">
-          <div className="bg-purple-100 p-4 rounded-lg">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Purchase Entries
-            </h3>
-            <p className="text-gray-600 text-sm mb-4">
-              A graph showing the number of purchase entries and their
-              performance over time
-            </p>
-          </div>
+      {/* end */}
 
-          <div>
-            <Line
-              data={vendorChartData}
-              options={vendorChartOptions}
-              plugins={[stripedBackground]}
-              height={300}
-            />
-          </div>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-10">
+        <PurchaseEntriesChart
+          data={vendorChartData}
+          options={vendorChartOptions}
+          stripedBackground={stripedBackground}
+        />
 
-        <div className="col-span-1 w-full max-w-full p-6 bg-white rounded-lg shadow-md">
-          <div className="bg-red-100 p-4 rounded-lg">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Purchase Orders
-            </h3>
-            <p className="text-gray-600 text-sm mb-4">
-              A graph showing the number of purchase orders and their
-              performance over time
-            </p>
-          </div>
-
-          <div>
-            <Bubble
-              data={purchaseOrderChartData}
-              plugins={[stripedBackground]}
-              options={purchaseOrderChartOptions}
-              height={300}
-            />
-          </div>
-        </div>
+        <PurchaseOrdersChart
+          data={purchaseOrderChartData}
+          options={purchaseOrderChartOptions}
+          stripedBackground={stripedBackground}
+        />
       </div>
 
       {/* </div> */}

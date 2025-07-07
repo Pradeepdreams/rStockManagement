@@ -146,11 +146,10 @@ function VendorsList({
 
     <>
       <td className="px-6 py-4 text-sm text-left font-semibold text-gray-700 whitespace-nowrap">
-     
-         <span className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">
-                        <FaHashtag className="text-gray-500" />
-                          {vendorsPagination.from + index}
-                      </span>
+        <span className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">
+          <FaHashtag className="text-gray-500" />
+          {vendorsPagination.from + index}
+        </span>
       </td>
 
       <td className="px-6 py-4 text-left text-sm font-bold text-gray-900 capitalize">

@@ -39,6 +39,8 @@ import DiscountCreate from "./Components/Masters/Discount/DiscountCreate";
 import Barcode from "./Components/Barcode/Barcode";
 import StockEntryCreate from "./Components/StockEntry/StockEntryCreate";
 import Error from "./Components/Error/Error";
+import CustomersCreate from "./Components/Customers/CustomersCreate";
+import SalesCreate from "./Components/Sales/SalesCreate";
 
 function App() {
   const isAuthenticated = () => {
@@ -75,6 +77,22 @@ function App() {
           element={
             <ProtectedRoutes>
               <Employees />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/customers"
+          element={
+            <ProtectedRoutes>
+              <CustomersCreate />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/sales"
+          element={
+            <ProtectedRoutes>
+              <SalesCreate/>
             </ProtectedRoutes>
           }
         />

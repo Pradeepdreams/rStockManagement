@@ -251,9 +251,9 @@ function PurchaseOrderEntriesCreate() {
         }
         handleDialogOpen={handleAddForPurchaseOrderEntries}
         buttonIcon={<BsCartPlusFill />}
-        pdf={true}
-        pdfDownload={<FaDownload />}
-        pdfText={"Download Purchase Order Reports"}
+        // pdf={true}
+        // pdfDownload={<FaDownload />}
+        // pdfText={"Download Purchase Order Reports"}
       />
 
       <PurchaseOrderEntriesList

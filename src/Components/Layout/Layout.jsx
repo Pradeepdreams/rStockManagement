@@ -28,7 +28,7 @@ export default function Layout() {
     //       </div>
     //     </main>
     // </div>
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-100">
   {showNavbar && <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />}
 
   <main className={`flex-1 transition-all duration-300 ${mainMargin}`}>

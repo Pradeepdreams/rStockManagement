@@ -59,21 +59,20 @@ function ItemDialogBox({
   const [attributeFields, setAttributeFields] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState("");
-
-  console.log(errors, "errors");
+   const [hsnCodeError, setHsnCodeError] = useState("");
   
 
-  const [vendorItemsInputs, setVendorItemsInputs] = useState({
-    item_name: "",
-    category_id: "",
-    attributes: [],
-    margin_percent: "",
-    margin_percent_from: "",
-    margin_percent_to: "",
-    reorder_level: "",
-    unit_of_measurement: "",
-    item_code: "",
-  });
+  // const [itemInputs, setItemInputs] = useState({
+  //   item_name: "",
+  //   category_id: "",
+  //   attributes: [],
+  //   margin_percent: "",
+  //   margin_percent_from: "",
+  //   margin_percent_to: "",
+  //   reorder_level: "",
+  //   unit_of_measurement: "",
+  //   item_code: "",
+  // });
 
   const {
     openDialogForCategory,
@@ -96,6 +95,8 @@ function ItemDialogBox({
 
   const handleChangeForVendorItems = (e) => {
     const { name, value } = e.target;
+    console.log(name, value);
+    
 
      if (name === "unit_of_measurement") {
     const alphabetOnly = /^[A-Za-z\s]*$/;
@@ -108,7 +109,7 @@ function ItemDialogBox({
     }
     }
 
-    setVendorItemsInputs((prevInputs) => ({
+    setItemInputs((prevInputs) => ({
       ...prevInputs,
       [name]: value,
     }));
@@ -210,8 +211,8 @@ function ItemDialogBox({
     e.preventDefault();
     const token = localStorage.getItem("token");
 
-    console.log(vendorItemsInputs, "payload");
-    const payload = vendorFlag ? vendorItemsInputs : itemInputs;
+    console.log(itemInputs, "payload");
+    const payload = vendorFlag ? itemInputs : itemInputs;
 
     const branchData = await getBranchDataFromBalaSilksDB();
     const branchIds = branchData.map((branch) => branch.branch.id_crypt);
@@ -333,8 +334,8 @@ function ItemDialogBox({
                   <h3 className="text-lg font-semibold text-gray-400 mb-4 ">
                     Items
                   </h3>
-
-                  {vendorFlag ? (
+                  
+                 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-6 bg-gray-50 rounded-md p-4">
                       {/* Item Name */}
                       <div>
@@ -348,7 +349,7 @@ function ItemDialogBox({
                           name="item_name"
                           placeholder="Item Name"
                           onChange={handleChangeForVendorItems}
-                          value={vendorItemsInputs?.item_name}
+                          value={itemInputs?.item_name}
                           disabled={isEditing}
                           className={`w-full bg-white ${
                             isEditing && "opacity-50 cursor-not-allowed"
@@ -364,6 +365,7 @@ function ItemDialogBox({
                       {/* Item Code (only when editing) */}
                       {editIdForItems && (
                         <div>
+                          
                           <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
                             <UserCircleIcon className="h-5 w-5 text-gray-400" />
                             <span>Item Code</span>
@@ -373,25 +375,142 @@ function ItemDialogBox({
                             placeholder="Item Code"
                             name="item_code"
                             onChange={handleChangeForVendorItems}
-                            value={vendorItemsInputs.item_code}
+                            value={itemInputs.item_code}
                             disabled
                             className="w-full bg-white opacity-50 cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins"
                           />
+
                         </div>
+                        
                       )}
+                     
+
+                      {/* Gst  */}
+
+                         <div className="w-full sm:col-span-1">
+                                            <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
+                                              <PercentBadgeIcon className="h-5 w-5 text-gray-400" />
+                                              <h4 className="">
+                                                GST Percentage <span className="text-red-400">*</span>
+                                              </h4>
+                                            </label>
+                                            <input
+                                              type="number"
+                                              placeholder="GST Percentage"
+                                              // name="gst_percent"
+                                            //  onChange={handleChangeForVendorItems}
+                          // value={itemInputs?.reorder_level}
+                                              disabled={isEditing}
+                                              className={`mt-1 w-full bg-white ${
+                                                isEditing && "opacity-50 cursor-not-allowed"
+                                              } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                                            />
+                      
+                                            {/* {requiredFields?.gst_percent && (
+                                              <p className="text-red-500 text-sm mt-1">
+                                                {requiredFields.gst_percent[0]}
+                                              </p>
+                                            )} */}
+                                          </div>
+
+
+                                          {/* GST Applicable Date */}
+
+                                              {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 sm:px-6 gap-5 mt-4 sm:mt-1 "> */}
+                                                              <div className="w-full sm:col-span-1">
+                                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                                  GST Applicable Date{" "}
+                                                                  <span className="text-red-400">*</span>
+                                                                </label>
+                                                                <input
+                                                                  type="date"
+                                                                  name="gst_applicable_date"
+                                                                  value={itemInputs?.gst_applicable_date || ""}
+                                                                  placeholder="GST Applicable Date"
+                                                                  min={new Date().toISOString().split("T")[0]}
+                                                                  onChange={handleChangeForVendorItems}
+                                                                  className={`mt-1 w-full bg-white ${
+                                                                    isEditing && "opacity-50 cursor-not-allowed"
+                                                                  } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
+                                                                  disabled={isEditing}
+                                                                />
+                                                                {requiredFields?.gst_applicable_date && (
+                                                                  <p className="text-red-500 text-sm mt-1">
+                                                                    {requiredFields.gst_applicable_date[0]}
+                                                                  </p>
+                                                                )}
+                                                              </div>
+                                          
+                                                              <div className="w-full sm:col-span-1">
+                                                                <label className="flex items-center  block text-sm font-medium text-gray-700 mb-1">
+                                                                  <NumberedListIcon className="h-5 w-5 text-gray-400" />
+                                                                  <h4>
+                                                                    HSN Code <span className="text-red-400">*</span>
+                                                                  </h4>
+                                                                </label>
+                                                                <div>
+                                                                  <input
+                                                                    type="text"
+                                                                    placeholder="HSN Code"
+                                                                    name="hsn_code"
+                                                                    onChange={handleChangeForVendorItems}
+                                                                    value={itemInputs?.hsn_code}
+                                                                    disabled={isEditing}
+                                                                    className={`mt-1 w-full bg-white ${
+                                                                      isEditing && "opacity-50 cursor-not-allowed"
+                                                                    } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
+                                                                  />
+                                                                  {hsnCodeError && (
+                                                                    <p className="text-red-500 text-sm mt-1">
+                                                                      {hsnCodeError}
+                                                                    </p>
+                                                                  )}
+                                                                </div>
+                                                                {requiredFields?.hsn_code && (
+                                                                  <p className="text-red-500 text-sm mt-1">
+                                                                    {requiredFields.hsn_code[0]}
+                                                                  </p>
+                                                                )}
+                                                              </div>
+                                          
+                                                              <div className="w-full sm:col-span-1">
+                                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                                  HSN Applicable Date{" "}
+                                                                  <span className="text-red-400">*</span>
+                                                                </label>
+                                                                <input
+                                                                  type="date"
+                                                                  name="hsn_applicable_date"
+                                                                  value={itemInputs?.hsn_applicable_date || ""}
+                                                                  placeholder="HSN Applicable Date"
+                                                                  min={new Date().toISOString().split("T")[0]}
+                                                                  onChange={handleChangeForVendorItems}
+                                                                  className={`mt-1 w-full bg-white ${
+                                                                    isEditing && "opacity-50 cursor-not-allowed"
+                                                                  } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
+                                                                  disabled={isEditing}
+                                                                />
+                                                                {requiredFields?.hsn_applicable_date && (
+                                                                  <p className="text-red-500 text-sm mt-1">
+                                                                    {requiredFields.hsn_applicable_date[0]}
+                                                                  </p>
+                                                                )}
+                                                              </div>
+                                                            {/* </div> */}
+
 
                       {/* Reorder Level */}
                       <div>
                         <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
                           <CheckBadgeIcon className="h-5 w-5 text-gray-400" />
-                          <span>Reorder Level</span>
+                          <span>Reorder Level </span>
                         </label>
                         <input
                           type="text"
                           name="reorder_level"
                           placeholder="Reorder Level"
                           onChange={handleChangeForVendorItems}
-                          value={vendorItemsInputs?.reorder_level}
+                          value={itemInputs?.reorder_level}
                           disabled={isEditing}
                           className={`w-full bg-white ${
                             isEditing && "opacity-50 cursor-not-allowed"
@@ -411,7 +530,7 @@ function ItemDialogBox({
                           name="unit_of_measurement"
                           placeholder="Unit Measurement"
                           onChange={handleChangeForVendorItems}
-                          value={vendorItemsInputs?.unit_of_measurement}
+                          value={itemInputs?.unit_of_measurement}
                           disabled={isEditing}
                           className={`w-full bg-white ${
                             isEditing && "opacity-50 cursor-not-allowed"
@@ -425,7 +544,7 @@ function ItemDialogBox({
   name="unit_of_measurement"
   placeholder="Unit Measurement"
   onChange={handleChangeForVendorItems}
-  value={vendorItemsInputs?.unit_of_measurement}
+  value={itemInputs?.unit_of_measurement}
   disabled={isEditing}
   className={`w-full bg-white ${
     isEditing ? "opacity-50 cursor-not-allowed" : ""
@@ -481,7 +600,7 @@ function ItemDialogBox({
                               .find(
                                 (option) =>
                                   Number(option.value) ===
-                                  Number(vendorItemsInputs?.category_id)
+                                  Number(itemInputs?.category_id)
                               ) || null
                           }
                           onChange={(selectedOption) => {
@@ -513,259 +632,7 @@ function ItemDialogBox({
                         )}
                       </div>
                     </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-6 bg-gray-50 rounded-md p-4">
-                      {/* Item Name */}
-                      <div>
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                          <UserCircleIcon className="h-5 w-5 text-gray-400" />
-                          <span>Item Name</span>{" "}
-                          <span className="text-red-400">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="item_name"
-                          placeholder="Item Name"
-                          onChange={handleChangeForItems}
-                          value={itemInputs?.item_name}
-                          disabled={isEditing}
-                          className={`w-full bg-white ${
-                            isEditing && "opacity-50 cursor-not-allowed"
-                          } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
-                        />
-                        {requiredFields.item_name && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields.item_name}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Item Code (only when editing) */}
-                      {editIdForItems && (
-                        <div>
-                          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                            <UserCircleIcon className="h-5 w-5 text-gray-400" />
-                            <span>Item Code</span>
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="Item Code"
-                            name="item_code"
-                            onChange={handleChangeForItems}
-                            value={itemInputs.item_code}
-                            disabled
-                            className="w-full bg-white opacity-50 cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins"
-                          />
-                        </div>
-                      )}
-
-                      {/* Margin From */}
-                      {/* <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                        <NumberedListIcon className="h-5 w-5 text-gray-400" />
-                        <span>Margin From</span>
-                        <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        name="margin_percent_from"
-                        placeholder="Margin Percent From"
-                        onChange={handleChangeForItems}
-                        value={itemInputs?.margin_percent_from}
-                        disabled={isEditing}
-                        min={50}
-                        max={90}
-                        className={`w-full bg-white ${
-                          isEditing && "opacity-50 cursor-not-allowed"
-                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
-                      />
-                      {requiredFields?.margin_percent_from && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {requiredFields.margin_percent_from}
-                        </p>
-                      )}
-                    </div> */}
-
-                      {/* Margin To */}
-                      {/* <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                        <NumberedListIcon className="h-5 w-5 text-gray-400" />
-                        <span>Margin To</span>
-                        <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        name="margin_percent_to"
-                        placeholder="Margin Percent To"
-                        onChange={handleChangeForItems}
-                        value={itemInputs?.margin_percent_to}
-                        disabled={isEditing}
-                        min={50}
-                        max={90}
-                        className={`w-full bg-white ${
-                          isEditing && "opacity-50 cursor-not-allowed"
-                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
-                      />
-                      {requiredFields?.margin_percent_to && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {requiredFields.margin_percent_to}
-                        </p>
-                      )}
-                    </div> */}
-
-                      {/* Reorder Level */}
-                      <div>
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                          <CheckBadgeIcon className="h-5 w-5 text-gray-400" />
-                          <span>Reorder Level</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="reorder_level"
-                          placeholder="Reorder Level"
-                          onChange={handleChangeForItems}
-                          value={itemInputs?.reorder_level}
-                          disabled={isEditing}
-                          className={`w-full bg-white ${
-                            isEditing && "opacity-50 cursor-not-allowed"
-                          } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
-                        />
-                      </div>
-
-                      {/* Unit Measurement */}
-                      <div>
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                          <Bars3CenterLeftIcon className="h-5 w-5 text-gray-400" />
-                          <span>Unit Measurement</span>
-                          <span className="text-red-400">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="unit_of_measurement"
-                          placeholder="Unit Measurement"
-                          onChange={handleChangeForItems}
-                          value={itemInputs?.unit_of_measurement}
-                          disabled={isEditing}
-                          className={`w-full bg-white ${
-                            isEditing && "opacity-50 cursor-not-allowed"
-                          } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
-                        />
-
-                        {errors && (
-  <p className="text-sm text-red-600 mt-1">{errors}</p>
-)}
-
-                        {requiredFields.unit_of_measurement && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields.unit_of_measurement}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Category Dropdown - spans full width */}
-                      <div className="col-span-1">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                          <PercentBadgeIcon className="h-5 w-5 text-gray-400" />
-                          <span>Category</span>
-                          <span className="text-red-400">*</span>
-                          {hideplusiconforcategory === "hide" ? (
-                            ""
-                          ) : (
-                            <PlusCircleIcon
-                              className="h-5 w-5 text-blue-400 cursor-pointer"
-                              onClick={(e) => handleAddCategory(e)}
-                            />
-                          )}
-                        </label>
-                        {/* <Select
-                        name="category_id"
-                        options={categoryPagination?.map((category) => ({
-                          value: category.id,
-                          label: category.name,
-                          idCrypt: category.id_crypt,
-                        }))}
-                        value={
-                          categoryPagination
-                            .find(
-                              (option) =>
-                                option.value == itemInputs?.category_id
-                            ) || null
-                            ?.map((category) => ({
-                              value: category.id,
-                              label: category.name,
-                              idCrypt: category.id_crypt,
-                            }))
-                        }
-                        onChange={(selectedOption) => {
-                          handleChangeForItems({
-                            target: {
-                              name: "category_id",
-                              value: selectedOption ? selectedOption.value : "",
-                              idCrypt: selectedOption
-                                ? selectedOption.idCrypt
-                                : null,
-                            },
-                          });
-                        }}
-                        menuPortalTarget={document.body}
-                        styles={{
-                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                        }}
-                        menuPosition="fixed"
-                        classNamePrefix="select"
-                        isDisabled={isEditing}
-                      /> */}
-
-                        <Select
-                          name="category_id"
-                          options={categoryPagination?.map((category) => ({
-                            value: category.id,
-                            label: category.name,
-                            idCrypt: category.id_crypt,
-                          }))}
-                          value={
-                            categoryPagination
-                              ?.map((category) => ({
-                                value: category.id,
-                                label: category.name,
-                                idCrypt: category.id_crypt,
-                              }))
-                              .find(
-                                (option) =>
-                                  Number(option.value) ===
-                                  Number(itemInputs?.category_id)
-                              ) || null
-                          }
-                          onChange={(selectedOption) => {
-                            handleChangeForItems({
-                              target: {
-                                name: "category_id",
-                                value: selectedOption
-                                  ? selectedOption.value
-                                  : "",
-                                idCrypt: selectedOption
-                                  ? selectedOption.idCrypt
-                                  : null,
-                              },
-                            });
-                          }}
-                          menuPortalTarget={document.body}
-                          styles={{
-                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                          }}
-                          menuPosition="fixed"
-                          classNamePrefix="select"
-                          isDisabled={isEditing}
-                        />
-
-                        {requiredFields.category_id && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields.category_id}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
+               
 
                   {categoriesData && (
                     <div className="p-4 border border-gray-200 rounded-md shadow-sm bg-white mt-4 mb-4">
