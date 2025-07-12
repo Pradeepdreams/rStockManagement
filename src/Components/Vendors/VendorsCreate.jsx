@@ -106,7 +106,7 @@ function VendorsCreate() {
     city: "",
     state: "",
     country: "",
-    pincode_id: "",
+    pincode: "",
     payment_term_id: "",
     credit_days: "",
     credit_limit: "",
@@ -635,7 +635,7 @@ function VendorsCreate() {
   const tabErrors = {
     "Address Details":
       requiredFields.address_line_1 ||
-      requiredFields.pincode_id ||
+      requiredFields.pincode ||
       requiredFields.country ||
       requiredFields.state ||
       requiredFields.city,
@@ -703,7 +703,7 @@ function VendorsCreate() {
       city: "",
       state: "",
       country: "",
-      pincode_id: "",
+      pincode: "",
       payment_term_id: "",
       credit_days: "",
       credit_limit: "",
@@ -819,7 +819,7 @@ function VendorsCreate() {
         setPhoneError("");
       }
     }
-    if (name === "pincode_id") {
+    if (name === "pincode") {
       const selectedIds = Array.isArray(value) ? value : [value];
       const selectedPincodeObjects = pincodePagination?.filter((item) =>
         selectedIds.includes(item.id)
@@ -975,7 +975,7 @@ function VendorsCreate() {
         city: "",
         state: "",
         country: "",
-        pincode_id: "",
+        pincode: "",
         payment_term_id: "",
         credit_days: "",
         credit_limit: "",
@@ -1281,41 +1281,10 @@ function VendorsCreate() {
               >
                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-10">
                   <DialogPanel className="relative transform overflow-hidden bg-white rounded-lg bg-gray-100  pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-7xl sm:p-0">
-                    
-
-                    {/* <div className="bg-white text-white p-4 flex items-center justify-between">
-                      
-                      <div className="flex items-center gap-2">
- <UserCircleIcon className="h-8 w-8 text-[#134b90]" />
-                      <h2 className="text-xl font-semibold text-black sm:text-3xl">
-                Add Vendor
-              </h2>
-                      </div>
-                     
-                      <div className="flex gap-2">
-                        {isEditing && (
-                          <div
-                            onClick={() => setIsEditing(false)}
-                            className="bg-blue-100 text-blue-600 p-2 rounded-md cursor-pointer hover:bg-blue-200"
-                          >
-                            <PencilIcon className="h-4 w-4" />
-                          </div>
-                        )}
-                        <div
-                          onClick={handleCloseForDialog}
-                          className="text-black  p-2 rounded-full cursor-pointer hover:bg-red-200"
-                        >
-                          <XMarkIcon className="h-4 w-4 sm:h-8 sm:w-8 font-bold"  />
-                        </div>
-                      </div>
-                    </div> */}
-
+                
                     <DialogHeader heading="Add Vendor" headingIcon={<UserCircleIcon className="h-8 w-8 text-[#134b90]" />} isEditing={isEditing} setIsEditing={setIsEditing} closeFunction={handleCloseForDialog} editIcon={<PencilIcon className="h-4 w-4" />} closeIcon ={<XMarkIcon className="h-4 w-4 sm:h-8 sm:w-8 font-bold" />}/>
 
                     <div className="m-4 bg-white border rounded-md border-gray-200 p-4">
-                      {/* <h3 className="text-lg font-semibold text-gray-400 mb-4 ">
-                        Vendor Basic Details
-                      </h3> */}
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:p-6 bg-gray-50 rounded-md ">
                         <div className="w-full col-span-1 sm:col-span-1">
@@ -1820,7 +1789,7 @@ function VendorsCreate() {
                                     <span className="text-red-400">*</span>
                                   </label>
                                   <Select
-                                    name="pincode_id"
+                                    name="pincode"
                                     options={
                                       pincodePagination?.map((pincode) => ({
                                         value: pincode.id,
@@ -1836,13 +1805,13 @@ function VendorsCreate() {
                                         .find(
                                           (option) =>
                                             option.value ===
-                                            vendorInputs?.pincode_id
+                                            vendorInputs?.pincode
                                         ) || null
                                     }
                                     onChange={(selectedOption) => {
                                       handleChangeForVendors({
                                         target: {
-                                          name: "pincode_id",
+                                          name: "pincode",
                                           value: selectedOption?.value || null,
                                         },
                                       });
@@ -1859,9 +1828,9 @@ function VendorsCreate() {
                                     classNamePrefix="select"
                                     isDisabled={isEditing}
                                   />
-                                  {requiredFields.pincode_id && (
+                                  {requiredFields.pincode && (
                                     <p className="text-red-500 text-sm mt-1">
-                                      {requiredFields.pincode_id[0]}
+                                      {requiredFields.pincode[0]}
                                     </p>
                                   )}
                                 </div>

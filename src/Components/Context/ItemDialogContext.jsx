@@ -14,13 +14,19 @@ export const ItemDialogProvider = ({ children }) => {
   const [itemInputs, setItemInputs] = useState({
     item_name: "",
     category_id: "",
-    attributes: [],
     reorder_level: "",
     unit_of_measurement: "",
     item_code: "",
+    item_type_code:"",
     gst_applicable_date: "",
+    gst_percent:"",
     hsn_code: "",
     hsn_applicable_date: "",
+    sac_code: "",
+    sac_applicable_date: "",
+    item_type: "",
+    purchase_price: "",
+    selling_price: "",
   });
 
   const toggleDialog = () => {

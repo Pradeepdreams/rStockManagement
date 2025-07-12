@@ -230,6 +230,7 @@ function ItemCreate({ fetchItemsAfterDialogClose }) {
 
   const handleAddForItems = () => {
     setLoading(true);
+    setIsEditing(false);
     setHidePlusIconForCategory("");
     try {
       setOpenDialogForItems(true);
@@ -237,13 +238,20 @@ function ItemCreate({ fetchItemsAfterDialogClose }) {
       setSaveBtnForItems("save");
 
       setItemInputs({
-        item_name: "",
-        category_id: "",
-        margin_percent_from: "",
-        margin_percent_to: "",
-        reorder_level: "",
-        unit_of_measurement: "",
-        item_code: "",
+       item_name: "",
+    category_id: "",
+    reorder_level: "",
+    unit_of_measurement: "",
+    item_code: "",
+    item_type_code:"",
+    gst_applicable_date: "",
+    hsn_code: "",
+    hsn_applicable_date: "",
+    sac_code: "",
+    sac_applicable_date: "",
+    item_type: "",
+    purchase_price: "",
+    selling_price: "",
       });
     } catch (error) {
       toast.error(error.response.data.message);

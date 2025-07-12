@@ -31,6 +31,7 @@ import Select from "react-select";
 import { getBranchDataFromBalaSilksDB } from "../Utils/indexDB";
 import { errorDialog } from "../Context/ErrorContext";
 import SaveButton from "../Utils/SaveButton";
+import DialogHeader from "../Utils/DialogHeader";
 
 function EmployeeDialogBox({
   openDialogForEmployee,
@@ -212,7 +213,7 @@ function EmployeeDialogBox({
           >
             <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-10">
               <DialogPanel className="relative transform overflow-hidden rounded-lg bg-gray-100  pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-7xl sm:p-0">
-                <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
+                {/* <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
                   <h2
                     style={{ fontFamily: "poppins" }}
                     className="font-semibold"
@@ -238,8 +239,23 @@ function EmployeeDialogBox({
                       <XMarkIcon className="h-4 w-4" />
                     </div>
                   </div>
-                </div>
-                <div className="m-4 bg-white border rounded-md border-gray-200 p-4">
+                </div> */}
+                   <DialogHeader
+                  heading="Employees"
+                  headingIcon={<UserCircleIcon className="h-8 w-8 text-[#134b90]" />}
+                  isEditing={isEditing}
+                  setIsEditing={setIsEditing}
+                  closeFunction={handleDialogCloseForEmployee}
+                  editIcon={
+                    isEditing ? (
+                      <PencilIcon className="h-4 w-4 cursor-pointer transition" />
+                    ) : null
+                  }
+                  closeIcon={
+                    <XMarkIcon className="h-4 w-4 sm:h-8 sm:w-8 font-bold" />
+                  }
+                />
+                <div className="bg-white border rounded-md border-gray-200 p-4">
                   {/* <h3 className="text-lg font-semibold text-gray-400 mb-4 ">
                     Employees
                   </h3> */}

@@ -6,6 +6,8 @@ import { RiDashboardLine, RiUserStarFill } from "react-icons/ri";
 import { FaUsers, FaUsersCog, FaUserAlt, FaSignOutAlt } from "react-icons/fa";
 import { GrUserWorker } from "react-icons/gr";
 import { CiSearch, CiCircleRemove } from "react-icons/ci";
+import { PiCellSignalHighBold } from "react-icons/pi";
+
 import {
   BsFillCartPlusFill,
   BsFillCartDashFill,
@@ -116,13 +118,13 @@ export default function Navbar({ collapsed, setCollapsed }) {
     {
       name: "Customers",
       href: "/customers",
-      icon: GrUserWorker,
+      icon: FaUsers ,
       // permission: "view_employees",
     },
     {
       name: "Sales",
       href: "/sales",
-      icon: GrUserWorker,
+      icon: PiCellSignalHighBold,
       // permission: "view_employees",
     },
     {

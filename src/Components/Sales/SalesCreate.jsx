@@ -135,7 +135,7 @@ function SalesCreate() {
     <Loader />
   ) : (
     <>
-      {/* <HeadersAndAddButton
+      <HeadersAndAddButton
         title="Sales"
         description="A list of all sales"
         buttonName="Add Sales"
@@ -145,19 +145,6 @@ function SalesCreate() {
         pdfDownload={<FaDownload />}
         // pdf={true}
         // pdfText={"Download Employees Report"}
-      /> */}
-
-      <SalesList
-        salesPaginationData={salesPaginationData}
-        setOpenDialogForSales={setOpenDialogForSales}
-        setSaveBtnForSales={setSaveBtnForSales}
-        setSalesInputs={setSalesInputs}
-        fetchSales={fetchSales}
-        setEditIdForSales={setEditIdForSales}
-        setCurrentPage={setCurrentPage}
-        setLoading={setLoading}
-        loading={loading}
-        setIsEditing={setIsEditing}
       />
 
       {openDialogForSales && (
@@ -176,6 +163,21 @@ function SalesCreate() {
 
         />
       )}
+
+      <SalesList
+        salesPaginationData={salesPaginationData}
+        setOpenDialogForSales={setOpenDialogForSales}
+        setSaveBtnForSales={setSaveBtnForSales}
+        setSalesInputs={setSalesInputs}
+        fetchSales={fetchSales}
+        setEditIdForSales={setEditIdForSales}
+        setCurrentPage={setCurrentPage}
+        setLoading={setLoading}
+        loading={loading}
+        setIsEditing={setIsEditing}
+      />
+
+      
 
 
     </>

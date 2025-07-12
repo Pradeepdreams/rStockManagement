@@ -18,30 +18,40 @@ import { IoMdMale } from "react-icons/io";
 import ViewButton from "../Utils/ViewButton";
 
 function CustomersList({
-        customerPaginationData,
-        setOpenDialogForCustomer,
-        setSaveBtnForCustomer,
-        setCustomerInputs,
-        fetchCustomersData,
-        setEditIdForCustomer,
-        setCurrentPage,
-        setLoading,
-        loading,
-        setIsEditing,
+            customersPagination,
+            setCurrentPage,
+            branchId,
+            setCustomerInputs,
+            setOpen,
+            setLoading,
+            loading,
+            setStateId,
+            setSaveBtn,
+            setEditIdCryptForCustomers,
+            setCustomerContactDetails,
+            itemsPagination,
+            setGetItems,
+            fetchCustomers,
+            setRequiredFields,
+            setGetTds,
+            setUpi,
+            handleFilteredSourceList,
+            setIsEditing,
+            
 }) {
 
 
-  console.log(customerPaginationData, "customers");
+  console.log(customersPagination, "customers");
   
 
   const navigate = useNavigate();
 
   const handleEditForCustomers = async (e, id_crypt) => {
     e.preventDefault();
-    setOpenDialogForCustomer(true);
+    setOpen(true);
     const token = localStorage.getItem("token");
-    setSaveBtnForCustomer("update");
-    setEditIdForCustomer(id_crypt);
+    setSaveBtn("update");
+    setEditIdCryptForCustomers(id_crypt);
     setIsEditing(true);
 
     const branchData = await getBranchDataFromBalaSilksDB();
@@ -62,20 +72,28 @@ function CustomersList({
 
       setCustomerInputs({
        name: customerEditData.name,
-        customer_type: customerEditData.customer_type,
-        email: customerEditData.email,
-        phone: customerEditData.phone,
-        address_line1: customerEditData.address_line1,
-        address_line2: customerEditData.address_line2,
-        city: customerEditData.city,
-        state: customerEditData.state,
-        country: customerEditData.country,
-        pincode: customerEditData.pincode,
-        gst_number: customerEditData.gst_number,
-        gst_type: customerEditData.gst_type,
-        pan_number: customerEditData.pan_number,
-        credit_limit: customerEditData.credit_limit,
-        customer_group: customerEditData.customer_group,
+    customer_type: customerEditData.customer_type,
+    group_id: customerEditData.group_id,
+    // vendor_group_id:
+    gst_in: customerEditData.gst_in,
+    pan_number: customerEditData.pan_number,
+    phone: customerEditData.phone_no,
+    email: customerEditData.email,
+    address_line_1: customerEditData.address_line_1,
+    address_line_2: customerEditData.address_line_2,
+    area_id: customerEditData.area_id,  
+    city: customerEditData.city,
+    state: customerEditData.state,
+    country: customerEditData.country,
+    pincode: customerEditData.pincode,
+    payment_term_id: customerEditData.payment_term_id,
+    credit_days: customerEditData.credit_days,
+    credit_limit: customerEditData.credit_limit,
+    tds_detail_id: customerEditData.tds_detail_id,
+    gst_applicable: customerEditData.gst_applicable == 1 ? "yes" : "no",
+    gst_applicable_from: customerEditData.gst_applicable,
+    gst_registration_type_id: customerEditData.gst_registration_type_id,
+   
       });
     } catch (error) {
       if (error.response?.status === 401) {
@@ -103,7 +121,7 @@ function CustomersList({
         
          <span className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">
                 <FaHashtag className="text-gray-500" />
-               {customerPaginationData.from + index}
+               {customersPagination.from + index}
               </span>
       </td>
 
@@ -131,7 +149,7 @@ function CustomersList({
       <td className="px-6 py-4 text-sm text-left text-gray-700">
         <span className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">
           {/* <FaEnvelope /> */}
-          {item.phone || "N/A"}
+          {item.phone_no || "N/A"}
         </span>
       </td>
 
@@ -152,7 +170,7 @@ function CustomersList({
           <DeleteConfirmation
             apiType="customers"
             id_crypt={item.id_crypt}
-            fetchDatas={fetchCustomersData}
+            fetchDatas={fetchCustomers}
             setLoading={setLoading}
             loading={loading}
           />
@@ -165,11 +183,11 @@ function CustomersList({
     <>
       <Table
         headers={headers}
-        data={customerPaginationData.data|| []}
+        data={customersPagination.data|| []}
         renderRow={renderRow}
       />
       <Pagination
-        meta={customerPaginationData}
+        meta={customersPagination}
         onPageChange={(page) => setCurrentPage(page)}
       />
     </>

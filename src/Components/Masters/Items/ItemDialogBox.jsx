@@ -21,6 +21,8 @@ import { useDialogForCategory } from "../../Context/CategoryDialogContext";
 import CatergoryDialogBox from "../Category/CatergoryDialogBox";
 import { useToast } from "../../Context/ToastProvider";
 import SaveButton from "../../Utils/SaveButton";
+import DialogHeader from "../../Utils/DialogHeader";
+import { RiMoneyRupeeCircleLine } from "react-icons/ri";
 
 function ItemDialogBox({
   fetchItems,
@@ -45,13 +47,7 @@ function ItemDialogBox({
 
   const { setCategoryInputs } = useDialogForCategory();
   const { triggerToast } = useToast();
-  const [requiredFields, setRequiredFields] = useState({
-    item_name: false,
-    category_id: false,
-    // margin_percent_from: false,
-    // margin_percent_to: false,
-    unit_of_measurement: false,
-  });
+  const [requiredFields, setRequiredFields] = useState("");
   const { collapsed } = useOutletContext();
   const [attributesId, setAttributesId] = useState([]);
   const [categoryId, setCategoryId] = useState("");
@@ -59,20 +55,8 @@ function ItemDialogBox({
   const [attributeFields, setAttributeFields] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState("");
-   const [hsnCodeError, setHsnCodeError] = useState("");
-  
-
-  // const [itemInputs, setItemInputs] = useState({
-  //   item_name: "",
-  //   category_id: "",
-  //   attributes: [],
-  //   margin_percent: "",
-  //   margin_percent_from: "",
-  //   margin_percent_to: "",
-  //   reorder_level: "",
-  //   unit_of_measurement: "",
-  //   item_code: "",
-  // });
+  const [hsnCodeError, setHsnCodeError] = useState("");
+  const [showItemType, setShowItemType] = useState(false);
 
   const {
     openDialogForCategory,
@@ -83,129 +67,43 @@ function ItemDialogBox({
   const handleAddCategory = () => {
     setOpenDialogForCategory(true);
     setCategoryInputs({
-      name: "",
-      attributes: [],
-      gst_percent: "",
-      applicable_date: "",
+      item_name: "",
+      category_id: "",
+      reorder_level: "",
+      unit_of_measurement: "",
+      item_code: "",
+      item_type_code: "",
+      gst_applicable_date: "",
       hsn_code: "",
-      active_status: "",
-      description: "",
+      hsn_applicable_date: "",
+      sac_code: "",
+      sac_applicable_date: "",
+      item_type: "",
+      purchase_price: "",
+      selling_price: "",
     });
   };
 
   const handleChangeForVendorItems = (e) => {
     const { name, value } = e.target;
     console.log(name, value);
-    
 
-     if (name === "unit_of_measurement") {
-    const alphabetOnly = /^[A-Za-z\s]*$/;
-
-    if (!alphabetOnly.test(value)) {
-      setErrors("Only alphabets are allowed.");
-      return; // ✅ prevent update
-    } else {
-      setErrors("");
-    }
-    }
-
-    setItemInputs((prevInputs) => ({
-      ...prevInputs,
-      [name]: value,
-    }));
-  };
-
-
-  const handleChangeForItems = async (e) => {
-    const { name, value, idCrypt } = e.target;
-    console.log(name, value);
-
-    if (name === "category_id") {
-      setCategoryId(value);
-    }
     if (name === "unit_of_measurement") {
-    const alphabetOnly = /^[A-Za-z\s]*$/;
+      const alphabetOnly = /^[A-Za-z\s]*$/;
 
-    if (!alphabetOnly.test(value)) {
-      setErrors("Only alphabets are allowed.");
-      return; // ✅ prevent update
-    } else {
-      setErrors("");
-    }
-    }
-
-    setItemInputs((prevInputs) => ({
-      ...prevInputs,
-      [name]: value,
-    }));
-
-    if (idCrypt) {
-      const token = localStorage.getItem("token");
-      const branchData = await getBranchDataFromBalaSilksDB();
-      const branchIds = branchData.map((branch) => branch.branch.id_crypt);
-      try {
-        const responseForCategory = await axios.get(
-          `public/api/categories/${idCrypt}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "X-Branch-Id": branchIds[0],
-            },
-          }
-        );
-
-        setCategoriesData(responseForCategory.data);
-        setAttributesId(
-          responseForCategory.data.attributes?.map((attr) => attr.id)
-        );
-
-        // Optional: update attributeFields
-        setAttributeFields(responseForCategory.data);
-      } catch (error) {
-        triggerToast("Fetch failed!", error.response.data.message, "error");
-        console.error("Error fetching category attributes:", error);
+      if (!alphabetOnly.test(value)) {
+        setErrors("Only alphabets are allowed.");
+        return; // ✅ prevent update
+      } else {
+        setErrors("");
       }
     }
+
+    setItemInputs((prevInputs) => ({
+      ...prevInputs,
+      [name]: value,
+    }));
   };
-
-  const handleChangeForAttributeItems = (selectedOption, attributeId) => {
-    // Ensure selectedOption is valid
-    if (!selectedOption) return;
-
-    const { value, label } = selectedOption; // Destructure both value and label
-
-    const updatedAttributes = Array.isArray(itemInputs.attributes)
-      ? [...itemInputs.attributes]
-      : [];
-
-    const existingAttributeIndex = updatedAttributes.findIndex(
-      (attr) => attr.attribute_id === attributeId
-    );
-
-    if (existingAttributeIndex > -1) {
-      // Update existing attribute with full object
-      updatedAttributes[existingAttributeIndex] = {
-        attribute_id: attributeId,
-        attribute_value: { value, label }, // Store the full object with value and label
-      };
-    } else {
-      // Add new attribute with full object
-      updatedAttributes.push({
-        attribute_id: attributeId,
-        attribute_value: { value, label }, // Store the full object with value and label
-      });
-    }
-
-    setItemInputs({
-      ...itemInputs,
-      attributes: updatedAttributes,
-    });
-  };
-
-  const formattedAttributes = itemInputs?.attributes?.map((attr) => ({
-    attribute_id: attr.attribute_id,
-    attribute_value_id: attr.attribute_value?.value ?? null,
-  }));
 
   const handleSubmitForItems = async (e) => {
     e.preventDefault();
@@ -301,9 +199,9 @@ function ItemDialogBox({
               collapsed ? "lg:ml-20" : "lg:ml-72"
             }`}
           >
-            <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-10">
+            <div className="flex min-h-full items-center mt-14 sm:mt-0 justify-center p-4 text-center sm:p-10">
               <DialogPanel className="relative transform overflow-hidden rounded-lg bg-gray-100  pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-7xl sm:p-0">
-                <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
+                {/* <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
                   <h2
                     style={{ fontFamily: "poppins" }}
                     className="font-semibold"
@@ -329,203 +227,355 @@ function ItemDialogBox({
                       <XMarkIcon className="h-4 w-4" />
                     </div>
                   </div>
-                </div>
-                <div className="m-4 bg-white border rounded-md border-gray-200 p-4">
-                  <h3 className="text-lg font-semibold text-gray-400 mb-4 ">
-                    Items
-                  </h3>
-                  
-                 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-6 bg-gray-50 rounded-md p-4">
-                      {/* Item Name */}
+                </div> */}
+
+                <DialogHeader
+                  heading="Items"
+                  headingIcon={
+                    <UserCircleIcon className="h-8 w-8 text-[#134b90]" />
+                  }
+                  isEditing={isEditing}
+                  setIsEditing={setIsEditing}
+                  closeFunction={() => setOpenDialogForItems(false)}
+                  editIcon={
+                    isEditing ? (
+                      <PencilIcon className="h-4 w-4 sm:h-8 sm:w-8 font-bold" />
+                    ) : null
+                  }
+                  closeIcon={
+                    <XMarkIcon className="h-4 w-4 sm:h-8 sm:w-8 font-bold" />
+                  }
+                />
+                <div className=" bg-white border rounded-md border-gray-200 p-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-x-5 gap-y-6 bg-gray-50 rounded-md p-4">
+                    {/* Item Name */}
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                        <UserCircleIcon className="h-5 w-5 text-gray-400" />
+                        <span>Item Name</span>{" "}
+                        <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="item_name"
+                        placeholder="Item Name"
+                        onChange={handleChangeForVendorItems}
+                        value={itemInputs?.item_name}
+                        disabled={isEditing}
+                        className={`w-full bg-white ${
+                          isEditing && "opacity-50 cursor-not-allowed"
+                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
+                      />
+                      {requiredFields.item_name && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {requiredFields.item_name}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Item Type */}
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                        <UserCircleIcon className="h-5 w-5 text-gray-400" />
+                        <span>Item Type</span>{" "}
+                        <span className="text-red-400">*</span>
+                      </label>
+                      <select
+                        name="item_type"
+                        onChange={handleChangeForVendorItems}
+                        value={itemInputs?.item_type}
+                        disabled={isEditing}
+                        className={`w-full bg-white ${
+                          isEditing && "opacity-50 cursor-not-allowed"
+                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
+                      >
+                        <option value="" disabled selected>
+                          Select Item Type
+                        </option>
+                        <option value="Goods">Goods</option>
+                        <option value="Service">Service</option>
+                      </select>
+                      {requiredFields.item_type && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {requiredFields.item_type}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Item Code (only when editing) */}
+                    {editIdForItems && (
                       <div>
                         <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
                           <UserCircleIcon className="h-5 w-5 text-gray-400" />
-                          <span>Item Name</span>{" "}
-                          <span className="text-red-400">*</span>
+                          <span>Item Code</span>
                         </label>
                         <input
                           type="text"
-                          name="item_name"
-                          placeholder="Item Name"
+                          placeholder="Item Code"
+                          name="item_code"
                           onChange={handleChangeForVendorItems}
-                          value={itemInputs?.item_name}
-                          disabled={isEditing}
-                          className={`w-full bg-white ${
-                            isEditing && "opacity-50 cursor-not-allowed"
-                          } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
+                          value={itemInputs.item_code}
+                          disabled
+                          className="w-full bg-white opacity-50 cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins"
                         />
-                        {requiredFields.item_name && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields.item_name}
-                          </p>
-                        )}
                       </div>
+                    )}
 
-                      {/* Item Code (only when editing) */}
-                      {editIdForItems && (
-                        <div>
-                          
-                          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                            <UserCircleIcon className="h-5 w-5 text-gray-400" />
-                            <span>Item Code</span>
+                    {/* Gst  */}
+
+                    <div className="w-full sm:col-span-1">
+                      <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
+                        <PercentBadgeIcon className="h-5 w-5 text-gray-400" />
+                        <h4 className="">
+                          GST Percentage <span className="text-red-400">*</span>
+                        </h4>
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="GST Percentage"
+                        name="gst_percent"
+                        onChange={handleChangeForVendorItems}
+                        value={itemInputs?.gst_percent}
+                        disabled={isEditing}
+                        className={`w-full bg-white ${
+                          isEditing && "opacity-50 cursor-not-allowed"
+                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                      />
+
+                      {requiredFields?.gst_percent && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {requiredFields.gst_percent[0]}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Purchase Price  */}
+
+                    <div className="w-full sm:col-span-1">
+                      <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
+                        <RiMoneyRupeeCircleLine className="h-5 w-5 text-gray-400" />
+                        <h4 className="">
+                          Purchase Price <span className="text-red-400">*</span>
+                        </h4>
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="Purchase Price"
+                        name="purchase_price"
+                        onChange={handleChangeForVendorItems}
+                        value={itemInputs?.purchase_price}
+                        disabled={isEditing}
+                        className={`mt-1 w-full bg-white ${
+                          isEditing && "opacity-50 cursor-not-allowed"
+                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                      />
+
+                      {requiredFields?.purchase_price && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {requiredFields.purchase_price[0]}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Selling Price  */}
+
+                    <div className="w-full sm:col-span-1">
+                      <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
+                        <RiMoneyRupeeCircleLine className="h-5 w-5 text-gray-400" />
+                        <h4 className="">
+                          Selling Price <span className="text-red-400">*</span>
+                        </h4>
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="Selling Price"
+                        name="selling_price"
+                        onChange={handleChangeForVendorItems}
+                        value={itemInputs?.selling_price}
+                        disabled={isEditing}
+                        className={`mt-1 w-full bg-white ${
+                          isEditing && "opacity-50 cursor-not-allowed"
+                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                      />
+
+                      {requiredFields?.selling_price && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {requiredFields.selling_price[0]}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* GST Applicable Date */}
+
+                    {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 sm:px-6 gap-5 mt-4 sm:mt-1 "> */}
+                    <div className="w-full sm:col-span-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        GST Applicable Date{" "}
+                        <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        name="gst_applicable_date"
+                        value={itemInputs?.gst_applicable_date || ""}
+                        placeholder="GST Applicable Date"
+                        min={new Date().toISOString().split("T")[0]}
+                        onChange={handleChangeForVendorItems}
+                        className={`mt-1 w-full bg-white ${
+                          isEditing && "opacity-50 cursor-not-allowed"
+                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
+                        disabled={isEditing}
+                      />
+                      {requiredFields?.gst_applicable_date && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {requiredFields.gst_applicable_date[0]}
+                        </p>
+                      )}
+                    </div>
+                    {itemInputs?.item_type === "Goods" ? (
+                      <>
+                        <div className="w-full sm:col-span-1">
+                          <label className="flex items-center  block text-sm font-medium text-gray-700 mb-1">
+                            <NumberedListIcon className="h-5 w-5 text-gray-400" />
+                            <h4>
+                              HSN Code <span className="text-red-400">*</span>
+                            </h4>
+                          </label>
+                          <div>
+                            <input
+                              type="text"
+                              placeholder="HSN Code"
+                              name="hsn_code"
+                              onChange={handleChangeForVendorItems}
+                              value={itemInputs?.hsn_code}
+                              disabled={isEditing}
+                              className={`mt-1 w-full bg-white ${
+                                isEditing && "opacity-50 cursor-not-allowed"
+                              } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
+                            />
+                            {hsnCodeError && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {hsnCodeError}
+                              </p>
+                            )}
+                          </div>
+                          {requiredFields?.hsn_code && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {requiredFields.hsn_code[0]}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="w-full sm:col-span-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            HSN Applicable Date{" "}
+                            <span className="text-red-400">*</span>
                           </label>
                           <input
-                            type="text"
-                            placeholder="Item Code"
-                            name="item_code"
+                            type="date"
+                            name="hsn_applicable_date"
+                            value={itemInputs?.hsn_applicable_date || ""}
+                            placeholder="HSN Applicable Date"
+                            min={new Date().toISOString().split("T")[0]}
                             onChange={handleChangeForVendorItems}
-                            value={itemInputs.item_code}
-                            disabled
-                            className="w-full bg-white opacity-50 cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins"
+                            className={`mt-1 w-full bg-white ${
+                              isEditing && "opacity-50 cursor-not-allowed"
+                            } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
+                            disabled={isEditing}
                           />
-
+                          {requiredFields?.hsn_applicable_date && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {requiredFields.hsn_applicable_date[0]}
+                            </p>
+                          )}
                         </div>
-                        
-                      )}
-                     
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-full sm:col-span-1">
+                          <label className="flex items-center  block text-sm font-medium text-gray-700 mb-1">
+                            <NumberedListIcon className="h-5 w-5 text-gray-400" />
+                            <h4>
+                              SAC Code <span className="text-red-400">*</span>
+                            </h4>
+                          </label>
+                          <div>
+                            <input
+                              type="text"
+                              placeholder="SAC Code"
+                              name="sac_code"
+                              onChange={handleChangeForVendorItems}
+                              value={itemInputs?.sac_code}
+                              disabled={isEditing}
+                              className={`mt-1 w-full bg-white ${
+                                isEditing && "opacity-50 cursor-not-allowed"
+                              } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
+                            />
+                            {hsnCodeError && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {hsnCodeError}
+                              </p>
+                            )}
+                          </div>
+                          {requiredFields?.sac_code && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {requiredFields.sac_code[0]}
+                            </p>
+                          )}
+                        </div>
 
-                      {/* Gst  */}
+                        <div className="w-full sm:col-span-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            SAC Applicable Date{" "}
+                            <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="date"
+                            name="sac_applicable_date"
+                            value={itemInputs?.sac_applicable_date || ""}
+                            min={new Date().toISOString().split("T")[0]}
+                            onChange={handleChangeForVendorItems}
+                            className={`mt-1 w-full bg-white ${
+                              isEditing && "opacity-50 cursor-not-allowed"
+                            } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
+                            disabled={isEditing}
+                          />
+                          {requiredFields?.sac_applicable_date && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {requiredFields.sac_applicable_date[0]}
+                            </p>
+                          )}
+                        </div>
+                      </>
+                    )}
+                    {/* </div> */}
 
-                         <div className="w-full sm:col-span-1">
-                                            <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
-                                              <PercentBadgeIcon className="h-5 w-5 text-gray-400" />
-                                              <h4 className="">
-                                                GST Percentage <span className="text-red-400">*</span>
-                                              </h4>
-                                            </label>
-                                            <input
-                                              type="number"
-                                              placeholder="GST Percentage"
-                                              // name="gst_percent"
-                                            //  onChange={handleChangeForVendorItems}
-                          // value={itemInputs?.reorder_level}
-                                              disabled={isEditing}
-                                              className={`mt-1 w-full bg-white ${
-                                                isEditing && "opacity-50 cursor-not-allowed"
-                                              } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-                                            />
-                      
-                                            {/* {requiredFields?.gst_percent && (
-                                              <p className="text-red-500 text-sm mt-1">
-                                                {requiredFields.gst_percent[0]}
-                                              </p>
-                                            )} */}
-                                          </div>
+                    {/* Reorder Level */}
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                        <CheckBadgeIcon className="h-5 w-5 text-gray-400" />
+                        <span>Reorder Level </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="reorder_level"
+                        placeholder="Reorder Level"
+                        onChange={handleChangeForVendorItems}
+                        value={itemInputs?.reorder_level}
+                        disabled={isEditing}
+                        className={`w-full bg-white ${
+                          isEditing && "opacity-50 cursor-not-allowed"
+                        } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
+                      />
+                    </div>
 
-
-                                          {/* GST Applicable Date */}
-
-                                              {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 sm:px-6 gap-5 mt-4 sm:mt-1 "> */}
-                                                              <div className="w-full sm:col-span-1">
-                                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                                  GST Applicable Date{" "}
-                                                                  <span className="text-red-400">*</span>
-                                                                </label>
-                                                                <input
-                                                                  type="date"
-                                                                  name="gst_applicable_date"
-                                                                  value={itemInputs?.gst_applicable_date || ""}
-                                                                  placeholder="GST Applicable Date"
-                                                                  min={new Date().toISOString().split("T")[0]}
-                                                                  onChange={handleChangeForVendorItems}
-                                                                  className={`mt-1 w-full bg-white ${
-                                                                    isEditing && "opacity-50 cursor-not-allowed"
-                                                                  } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
-                                                                  disabled={isEditing}
-                                                                />
-                                                                {requiredFields?.gst_applicable_date && (
-                                                                  <p className="text-red-500 text-sm mt-1">
-                                                                    {requiredFields.gst_applicable_date[0]}
-                                                                  </p>
-                                                                )}
-                                                              </div>
-                                          
-                                                              <div className="w-full sm:col-span-1">
-                                                                <label className="flex items-center  block text-sm font-medium text-gray-700 mb-1">
-                                                                  <NumberedListIcon className="h-5 w-5 text-gray-400" />
-                                                                  <h4>
-                                                                    HSN Code <span className="text-red-400">*</span>
-                                                                  </h4>
-                                                                </label>
-                                                                <div>
-                                                                  <input
-                                                                    type="text"
-                                                                    placeholder="HSN Code"
-                                                                    name="hsn_code"
-                                                                    onChange={handleChangeForVendorItems}
-                                                                    value={itemInputs?.hsn_code}
-                                                                    disabled={isEditing}
-                                                                    className={`mt-1 w-full bg-white ${
-                                                                      isEditing && "opacity-50 cursor-not-allowed"
-                                                                    } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
-                                                                  />
-                                                                  {hsnCodeError && (
-                                                                    <p className="text-red-500 text-sm mt-1">
-                                                                      {hsnCodeError}
-                                                                    </p>
-                                                                  )}
-                                                                </div>
-                                                                {requiredFields?.hsn_code && (
-                                                                  <p className="text-red-500 text-sm mt-1">
-                                                                    {requiredFields.hsn_code[0]}
-                                                                  </p>
-                                                                )}
-                                                              </div>
-                                          
-                                                              <div className="w-full sm:col-span-1">
-                                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                                  HSN Applicable Date{" "}
-                                                                  <span className="text-red-400">*</span>
-                                                                </label>
-                                                                <input
-                                                                  type="date"
-                                                                  name="hsn_applicable_date"
-                                                                  value={itemInputs?.hsn_applicable_date || ""}
-                                                                  placeholder="HSN Applicable Date"
-                                                                  min={new Date().toISOString().split("T")[0]}
-                                                                  onChange={handleChangeForVendorItems}
-                                                                  className={`mt-1 w-full bg-white ${
-                                                                    isEditing && "opacity-50 cursor-not-allowed"
-                                                                  } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins`}
-                                                                  disabled={isEditing}
-                                                                />
-                                                                {requiredFields?.hsn_applicable_date && (
-                                                                  <p className="text-red-500 text-sm mt-1">
-                                                                    {requiredFields.hsn_applicable_date[0]}
-                                                                  </p>
-                                                                )}
-                                                              </div>
-                                                            {/* </div> */}
-
-
-                      {/* Reorder Level */}
-                      <div>
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                          <CheckBadgeIcon className="h-5 w-5 text-gray-400" />
-                          <span>Reorder Level </span>
-                        </label>
-                        <input
-                          type="text"
-                          name="reorder_level"
-                          placeholder="Reorder Level"
-                          onChange={handleChangeForVendorItems}
-                          value={itemInputs?.reorder_level}
-                          disabled={isEditing}
-                          className={`w-full bg-white ${
-                            isEditing && "opacity-50 cursor-not-allowed"
-                          } rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
-                        />
-                      </div>
-
-                      {/* Unit Measurement */}
-                      <div>
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                          <Bars3CenterLeftIcon className="h-5 w-5 text-gray-400" />
-                          <span>Unit Measurement</span>
-                          <span className="text-red-400">*</span>
-                        </label>
-                        {/* <input
+                    {/* Unit Measurement */}
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                        <Bars3CenterLeftIcon className="h-5 w-5 text-gray-400" />
+                        <span>Unit Measurement</span>
+                        <span className="text-red-400">*</span>
+                      </label>
+                      {/* <input
                           type="text"
                           name="unit_of_measurement"
                           placeholder="Unit Measurement"
@@ -539,100 +589,97 @@ function ItemDialogBox({
                          {errors && (
     <p className="text-sm text-red-600 mt-1">{errors}</p>
   )} */}
-  <input
-  type="text"
-  name="unit_of_measurement"
-  placeholder="Unit Measurement"
-  onChange={handleChangeForVendorItems}
-  value={itemInputs?.unit_of_measurement}
-  disabled={isEditing}
-  className={`w-full bg-white ${
-    isEditing ? "opacity-50 cursor-not-allowed" : ""
-  } rounded-md border ${
-    errors ? "border-red-500" : "border-gray-300"
-  } px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
-/>
+                      <input
+                        type="text"
+                        name="unit_of_measurement"
+                        placeholder="Unit Measurement"
+                        onChange={handleChangeForVendorItems}
+                        value={itemInputs?.unit_of_measurement}
+                        disabled={isEditing}
+                        className={`w-full bg-white ${
+                          isEditing ? "opacity-50 cursor-not-allowed" : ""
+                        } rounded-md border ${
+                          errors ? "border-red-500" : "border-gray-300"
+                        } px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none font-poppins`}
+                      />
 
-{errors && (
-  <p className="text-sm text-red-600 mt-1">{errors}</p>
-)}
+                      {errors && (
+                        <p className="text-sm text-red-600 mt-1">{errors}</p>
+                      )}
 
-
-                        {requiredFields.unit_of_measurement && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields.unit_of_measurement}
-                          </p>
-                        )}
-
-                        
-                      </div>
-
-                      {/* Category Dropdown - spans full width */}
-                      <div className="col-span-1">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                          <PercentBadgeIcon className="h-5 w-5 text-gray-400" />
-                          <span>Category</span>
-                          <span className="text-red-400">*</span>
-                          {hideplusiconforcategory === "hide" ? (
-                            ""
-                          ) : (
-                            <PlusCircleIcon
-                              className="h-5 w-5 text-blue-400 cursor-pointer"
-                              onClick={(e) => handleAddCategory(e)}
-                            />
-                          )}
-                        </label>
-
-                        <Select
-                          name="category_id"
-                          options={categoryPagination?.map((category) => ({
-                            value: category.id,
-                            label: category.name,
-                            idCrypt: category.id_crypt,
-                          }))}
-                          value={
-                            categoryPagination
-                              ?.map((category) => ({
-                                value: category.id,
-                                label: category.name,
-                                idCrypt: category.id_crypt,
-                              }))
-                              .find(
-                                (option) =>
-                                  Number(option.value) ===
-                                  Number(itemInputs?.category_id)
-                              ) || null
-                          }
-                          onChange={(selectedOption) => {
-                            handleChangeForVendorItems({
-                              target: {
-                                name: "category_id",
-                                value: selectedOption
-                                  ? selectedOption.value
-                                  : "",
-                                idCrypt: selectedOption
-                                  ? selectedOption.idCrypt
-                                  : null,
-                              },
-                            });
-                          }}
-                          menuPortalTarget={document.body}
-                          styles={{
-                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                          }}
-                          menuPosition="fixed"
-                          classNamePrefix="select"
-                          isDisabled={isEditing}
-                        />
-
-                        {requiredFields?.category_id && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields?.category_id}
-                          </p>
-                        )}
-                      </div>
+                      {requiredFields.unit_of_measurement && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {requiredFields.unit_of_measurement}
+                        </p>
+                      )}
                     </div>
-               
+
+                    {/* Category Dropdown - spans full width */}
+                    <div className="col-span-1">
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                        <PercentBadgeIcon className="h-5 w-5 text-gray-400" />
+                        <span>Category</span>
+                        <span className="text-red-400">*</span>
+                        {hideplusiconforcategory === "hide" ? (
+                          ""
+                        ) : (
+                          <PlusCircleIcon
+                            className={`h-5 w-5 text-blue-400 ${
+                              isEditing &&
+                              "opacity-50 cursor-not-allowed pointer-events-none"
+                            } cursor-pointer`}
+                            onClick={(e) => handleAddCategory(e)}
+                          />
+                        )}
+                      </label>
+
+                      <Select
+                        name="category_id"
+                        options={categoryPagination?.map((category) => ({
+                          value: category.id,
+                          label: category.name,
+                          idCrypt: category.id_crypt,
+                        }))}
+                        value={
+                          categoryPagination
+                            ?.map((category) => ({
+                              value: category.id,
+                              label: category.name,
+                              idCrypt: category.id_crypt,
+                            }))
+                            .find(
+                              (option) =>
+                                Number(option.value) ===
+                                Number(itemInputs?.category_id)
+                            ) || null
+                        }
+                        onChange={(selectedOption) => {
+                          handleChangeForVendorItems({
+                            target: {
+                              name: "category_id",
+                              value: selectedOption ? selectedOption.value : "",
+                              idCrypt: selectedOption
+                                ? selectedOption.idCrypt
+                                : null,
+                            },
+                          });
+                        }}
+                        menuPortalTarget={document.body}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        }}
+                        menuPosition="fixed"
+                        classNamePrefix="select"
+                        isDisabled={isEditing}
+                      />
+
+                      {requiredFields?.category_id && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {requiredFields?.category_id}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
                   {categoriesData && (
                     <div className="p-4 border border-gray-200 rounded-md shadow-sm bg-white mt-4 mb-4">
@@ -690,16 +737,18 @@ function ItemDialogBox({
                     </div>
                   )}
 
-                  <div className=" p-5 pb-5 sm:pb-0">
-                    <div className="mt-3 sm:mt-4">
-                      <div className="grid grid-cols-1 sm:hidden">
-                        <ChevronDownIcon
-                          aria-hidden="true"
-                          className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end fill-gray-500"
-                        />
+                  {categoriesData && (
+                    <div className=" p-5 pb-5 sm:pb-0">
+                      <div className="mt-3 sm:mt-4">
+                        <div className="grid grid-cols-1 sm:hidden">
+                          <ChevronDownIcon
+                            aria-hidden="true"
+                            className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end fill-gray-500"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="mt-2 flex items-center justify-end gap-x-4 p-5">
                     {!isEditing && (

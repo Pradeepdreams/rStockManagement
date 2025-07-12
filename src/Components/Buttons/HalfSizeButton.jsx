@@ -18,7 +18,7 @@ function HalfSizeButton({
     <button
       type="submit"
       onClick={buttonFunction}
-      className="w-full sm:w-auto bg-[var(--hd-bg)] hover:bg-purple-800 text-white font-bold text-sm py-2 px-4 rounded-md focus:outline-none"
+      className="w-full sm:w-auto bg-[var(--addbutton-bgcolor)] cursor-pointer text-white font-bold text-sm py-2 px-4 rounded-full focus:outline-none"
       style={{ fontFamily: "Poppins, sans-serif" }}
     >
       <span className="flex items-center justify-center gap-2">

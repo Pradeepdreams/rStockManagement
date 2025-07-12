@@ -25,6 +25,8 @@ import axios from "../Utils/AxiosInstance";
 import { triggerGlobalToast } from "../Utils/GlobalToast";
 import { useToast } from "../Context/ToastProvider";
 import SaveButton from "../Utils/SaveButton";
+import DialogHeader from "../Utils/DialogHeader";
+import { PencilIcon, UserCircleIcon } from "@heroicons/react/16/solid";
 
 function PurchaseOrderEntriesDialogBox({
   openDialogForPurchaseOrderEntries,
@@ -981,7 +983,7 @@ function PurchaseOrderEntriesDialogBox({
           >
             <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-10">
               <DialogPanel className="relative transform overflow-hidden rounded-lg bg-gray-100  pb-4 text-left shadow-xl transition-all sm:my-8 w-full sm:w-full sm:max-w-7xl sm:p-0">
-                <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
+                {/* <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
                   <h2
                     style={{ fontFamily: "poppins" }}
                     className="font-semibold"
@@ -1001,8 +1003,23 @@ function PurchaseOrderEntriesDialogBox({
                       className="h-5 w-5  cursor-pointer transition"
                     />
                   </div>
-                </div>
-                <div className="m-4 bg-white border rounded-md border-gray-200 p-6">
+                </div> */}
+                 <DialogHeader
+                                  heading="Purchase Entries"
+                                  headingIcon={<UserCircleIcon className="h-8 w-8 text-[#134b90]" />}
+                                  isEditing={isEditing}
+                                  setIsEditing={setIsEditing}
+                                  closeFunction={handleCloseForDialog}
+                                  editIcon={
+                                    isEditing ? (
+                                      <PencilIcon className="h-4 w-4 cursor-pointer transition" />
+                                    ) : null
+                                  }
+                                  closeIcon={
+                                    <XMarkIcon className="h-4 w-4 sm:h-8 sm:w-8 font-bold" />
+                                  }
+                                />
+                <div className="bg-white border rounded-md border-gray-200 p-6">
                   <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-5 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5">
                     {activeTab === "purchase" && (
                       <>

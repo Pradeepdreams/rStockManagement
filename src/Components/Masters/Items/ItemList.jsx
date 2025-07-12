@@ -17,7 +17,6 @@ import {
   FaBalanceScale,
 } from "react-icons/fa";
 
-
 function ItemList({
   itemPagination,
   setOpenDialogForItems,
@@ -38,7 +37,7 @@ function ItemList({
   setHidePlusIconForCategory,
 }) {
   const navigate = useNavigate();
-const {triggerToast} = useToast();  
+  const { triggerToast } = useToast();
   const handleViewForitem = async (e, id_crypt) => {
     e.preventDefault();
     setLoading(true);
@@ -62,16 +61,24 @@ const {triggerToast} = useToast();
       );
 
       const item = responseForItemssEditData.data.original;
+      console.log(item, "item");
+
       setItemInputs({
         item_name: item?.item_name,
+        item_type: item?.item_type,
         category_id: item?.category_id,
-        margin_percent: item?.margin_percent,
         reorder_level: item?.reorder_level,
         unit_of_measurement: item?.unit_of_measurement,
         item_code: item?.item_code,
+        gst_applicable_date: item?.latest_gst_percent?.applicable_date,
+        hsn_code: item?.latest_hsn_code?.hsn_code,
+        hsn_applicable_date: item?.latest_hsn_code?.applicable_date,
+        sac_code: item?.latest_sac_code?.sac_code,
+        gst_percent: item?.latest_gst_percent?.gst_percent,
+        sac_applicable_date: item?.latest_sac_code?.applicable_date,
+        purchase_price: item?.purchase_price,
+        selling_price: item?.selling_price,
       });
-      console.log(item, "test");
-      console.log(item.item_name);
 
       // setCategoriesData(item.category);
       // setViewCategoryBasedAttribute(item.category_id);
@@ -132,71 +139,70 @@ const {triggerToast} = useToast();
     // </>
 
     <>
-  {/* Index */}
-  <td className="px-6 py-4 whitespace-nowrap text-left">
-    <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-medium">
-      <FaHashtag className="text-gray-500" />
-      {itemPagination.from + index}
-    </span>
-  </td>
+      {/* Index */}
+      <td className="px-6 py-4 whitespace-nowrap text-left">
+        <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-medium">
+          <FaHashtag className="text-gray-500" />
+          {itemPagination.from + index}
+        </span>
+      </td>
 
-  {/* Item Name */}
-  <td className="px-6 py-4 text-left">
-    <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium capitalize">
-      <FaBox className="text-blue-600" />
-      {item.item_name || "N/A"}
-    </span>
-  </td>
+      {/* Item Name */}
+      <td className="px-6 py-4 text-left">
+        <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium capitalize">
+          <FaBox className="text-blue-600" />
+          {item.item_name || "N/A"}
+        </span>
+      </td>
 
-  {/* Item Code */}
-  <td className="px-6 py-4 text-left">
-    <span className="inline-flex items-center gap-1 border border-indigo-100 text-indigo-800 px-2 py-1 rounded text-sm font-medium">
-      <FaBarcode className="text-indigo-600" />
-      {item.item_code || "N/A"}
-    </span>
-  </td>
+      {/* Item Code */}
+      <td className="px-6 py-4 text-left">
+        <span className="inline-flex items-center gap-1 border border-indigo-100 text-indigo-800 px-2 py-1 rounded text-sm font-medium">
+          <FaBarcode className="text-indigo-600" />
+          {item.item_code || "N/A"}
+        </span>
+      </td>
 
-  {/* Category */}
-  <td className="px-6 py-4 text-left">
-    <span className="inline-flex items-center gap-1   px-2 py-1 rounded text-sm font-medium capitalize">
-      {/* <FaTags className="text-green-600" /> */}
-      {item.category?.name || "N/A"}
-    </span>
-  </td>
+      {/* Category */}
+      <td className="px-6 py-4 text-left">
+        <span className="inline-flex items-center gap-1   px-2 py-1 rounded text-sm font-medium capitalize">
+          {/* <FaTags className="text-green-600" /> */}
+          {item.category?.name || "N/A"}
+        </span>
+      </td>
 
-  {/* Reorder Level */}
-  <td className="px-6 py-4 text-left">
-    <span className="inline-flex items-center gap-1 text-yellow-800 px-2 py-1 rounded text-sm font-medium">
-      {/* <FaBell className="text-yellow-600" /> */}
-      {item.reorder_level || "N/A"}
-    </span>
-  </td>
+      {/* Reorder Level */}
+      <td className="px-6 py-4 text-left">
+        <span className="inline-flex items-center gap-1 text-yellow-800 px-2 py-1 rounded text-sm font-medium">
+          {/* <FaBell className="text-yellow-600" /> */}
+          {item.reorder_level || "N/A"}
+        </span>
+      </td>
 
-  {/* Unit of Measurement */}
-  <td className="px-6 py-4 text-left">
-    <span className="inline-flex items-center gap-1 bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-medium capitalize">
-      <FaBalanceScale className="text-purple-600" />
-      {item.unit_of_measurement || "N/A"}
-    </span>
-  </td>
+      {/* Unit of Measurement */}
+      <td className="px-6 py-4 text-left">
+        <span className="inline-flex items-center gap-1 bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-medium capitalize">
+          <FaBalanceScale className="text-purple-600" />
+          {item.unit_of_measurement || "N/A"}
+        </span>
+      </td>
 
-  {/* Actions */}
-  <td className="px-6 py-4 text-center">
-    <div className="flex gap-2">
-      <ViewButton onView={handleViewForitem} item={item} />
+      {/* Actions */}
+      <td className="px-6 py-4 text-center">
+        <div className="flex gap-2">
+          <ViewButton onView={handleViewForitem} item={item} />
 
-      <DeleteConfirmation
-        apiType="item"
-        id_crypt={item.id_crypt}
-        fetchDatas={fetchItems}
-        branchId={branchId}
-        setLoading={setLoading}
-        loading={loading}
-      />
-    </div>
-  </td>
-</>
-
+          <DeleteConfirmation
+            apiType="item"
+            id_crypt={item.id_crypt}
+            fetchDatas={fetchItems}
+            branchId={branchId}
+            setLoading={setLoading}
+            loading={loading}
+          />
+        </div>
+      </td>
+    </>
   );
 
   return (

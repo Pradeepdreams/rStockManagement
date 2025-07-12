@@ -5,7 +5,6 @@ import { useOutletContext } from "react-router-dom";
 import "react-tooltip/dist/react-tooltip.css";
 import SaveButton from "../Utils/SaveButton";
 
-
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import {
   ArrowDownCircleIcon,
@@ -17,9 +16,13 @@ import {
   DocumentTextIcon,
   LightBulbIcon,
   MapPinIcon,
+  NumberedListIcon,
+  PencilIcon,
   PencilSquareIcon,
+  UserCircleIcon,
   UserGroupIcon,
   UserPlusIcon,
+  UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/16/solid";
 import Select from "react-select";
@@ -38,13 +41,26 @@ import { toast } from "react-toastify";
 import { useSearch } from "../Context/SearchContext";
 import { all } from "axios";
 import { BsCartPlusFill } from "react-icons/bs";
+import CameraSection from "./CameraSection";
+import DialogHeader from "../Utils/DialogHeader";
 
-function PurchaseOrderCreate() {
+function SalesDialogBox({
+  openDialogForSales,
+  setOpenDialogForSales,
+  salesInputs,
+  setSalesInputs,
+  saveBtnForSales,
+  setSaveBtnForSales,
+  fetchSales,
+  setEditIdForSales,
+  editIdForSales,
+  setIsEditing,
+  isEditing,
+}) {
   const { collapsed } = useOutletContext();
 
   const [loading, setLoading] = useState(false);
   const [saveBtn, setSaveBtn] = useState("save");
-  const [isEditing, setIsEditing] = useState(false);
   const [editIdCrypt, setEditIdCrypt] = useState("");
   const [showInward, setShowInward] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -117,7 +133,7 @@ function PurchaseOrderCreate() {
   const [requiredFields, setRequiredFields] = useState([]);
   const [OpenDialogForPurchaseOrder, setOpenDialogForPurchaseOrder] =
     useState(false);
-  const [areaDatas, setAreaDatas] = useState([]);
+  const [customerDatas, setCustomerDatas] = useState([]);
   const [vendorDatas, setVendorDatas] = useState([]);
   const [paymentTermsData, setPaymentTermsData] = useState([]);
   const [itemDatas, setItemDatas] = useState([]);
@@ -192,7 +208,7 @@ function PurchaseOrderCreate() {
     }
   }, [poEditDatas]);
 
-  const fetchPurchaseOrderDatas = async (page = 1, searchTerm) => {
+  const fetchSalesOrderDatas = async (page = 1, searchTerm) => {
     const branchData = await getBranchDataFromBalaSilksDB();
     const branchIds = branchData.map((branch) => branch.branch.id_crypt);
     const token = localStorage.getItem("token");
@@ -217,6 +233,17 @@ function PurchaseOrderCreate() {
 
     setPoPaginationDatas(responseForPoDatas?.data?.purchase_orders);
 
+           const response = await axios.get(`public/api/customers`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-Branch-Id": branchIds[0],
+        },
+      });
+      console.log(response, "customers");
+      
+      setCustomerDatas(response?.data.customers.data);
+
+
     const responseForActiveDiscount = await axios.get(
       `public/api/discount-on-purchases/active/percent`,
       {
@@ -237,7 +264,7 @@ function PurchaseOrderCreate() {
   };
 
   useEffect(() => {
-    fetchPurchaseOrderDatas(currentPage, searchTerm);
+    fetchSalesOrderDatas(currentPage, searchTerm);
   }, [currentPage, searchTerm]);
 
   const fetchVendorsByArea = async (area_id_crypt) => {
@@ -336,7 +363,7 @@ function PurchaseOrderCreate() {
     }
   };
 
-  const fetchPurchaseOrder = async (page = 1) => {
+  const fetchSalesOrder = async (page = 1) => {
     const branchData = await getBranchDataFromBalaSilksDB();
     const branchIds = branchData.map((branch) => branch.branch.id_crypt);
     const token = localStorage.getItem("token");
@@ -345,13 +372,7 @@ function PurchaseOrderCreate() {
     });
 
     try {
-      const response = await axios.get(`public/api/areas/list`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-Branch-Id": branchIds[0],
-        },
-      });
-      setAreaDatas(response?.data);
+     
 
       const responseForVendorsList = await axios.get(
         `public/api/vendors/list`,
@@ -398,7 +419,7 @@ function PurchaseOrderCreate() {
   };
 
   useEffect(() => {
-    fetchPurchaseOrder();
+    fetchSalesOrder();
   }, []);
 
   useEffect(() => {
@@ -930,7 +951,7 @@ function PurchaseOrderCreate() {
   };
 
   const handleCloseForDialog = () => {
-    setOpenDialogForPurchaseOrder(false);
+    setOpenDialogForSales(false);
     setExpectedDeliveryShow(false);
     setLogisticsShow(false);
     setPaymentTermShow(false);
@@ -978,7 +999,7 @@ function PurchaseOrderCreate() {
         }
       );
 
-      await fetchPurchaseOrderDatas();
+      await fetchSalesOrderDatas();
       setOpenDialogForPurchaseOrder(false);
       triggerToast(
         "Success",
@@ -1040,7 +1061,7 @@ function PurchaseOrderCreate() {
         }
       );
 
-      await fetchPurchaseOrderDatas();
+      await fetchSalesOrderDatas();
       setOpenDialogForPurchaseOrder(false);
       triggerToast(
         "Success",
@@ -1292,435 +1313,447 @@ function PurchaseOrderCreate() {
         <Loader />
       ) : (
         <>
-          <HeadersAndAddButton
-            title={"Purchase Orders"}
-            description={"A list of all purchase orders"}
-            buttonName={"Add Purchase Order"}
-            handleDialogOpen={handleDialogOpenForPurchaseOrder}
-            buttonIcon={<BsCartPlusFill />}
-            pdf={false}
-          />
-        </>
-      )}
+          {openDialogForSales && (
+            <Dialog
+              open={openDialogForSales}
+              onClose={() => {}}
+              className="relative z-50"
+            >
+              <DialogBackdrop className="fixed inset-0 bg-gray-500/75" />
 
-
-      {OpenDialogForPurchaseOrder && (
-        <Dialog
-          open={OpenDialogForPurchaseOrder}
-          onClose={() => {}}
-          className="relative z-50"
-        >
-          <DialogBackdrop className="fixed inset-0 bg-gray-500/75" />
-
-          <div
-            className={`fixed inset-0 overflow-y-auto transition-all duration-400 ${
-              collapsed ? "lg:ml-20" : "lg:ml-72"
-            }`}
-          >
-            <div className="flex min-h-full items-center justify-center sm:p-4 text-center sm:p-10">
-              {/* <DialogPanel className="relative transform overflow-hidden rounded-lg bg-gray-100 pb-4 text-left shadow-xl transition-all sm:my-8 w-full sm:w-full sm:max-w-7xl sm:p-0"> */}
-              <DialogPanel
-                className="
-      relative transform overflow-y-auto bg-gray-100 text-left shadow-xl transition-all 
-    w-screen h-screen rounded-none
-
-      sm:fixed sm:inset-0 sm:w-screen sm:h-screen sm:overflow-auto
-
-      md:fixed md:inset-0 md:w-screen md:h-screen md:overflow-auto
-
-      lg:relative lg:rounded-lg lg:max-w-7xl lg:w-full lg:h-auto lg:overflow-visible
-    "
+              <div
+                className={`fixed inset-0 overflow-y-auto transition-all duration-400 ${
+                  collapsed ? "lg:ml-20" : "lg:ml-72"
+                }`}
               >
-                <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
-                  <h2
-                    style={{ fontFamily: "poppins" }}
-                    className="font-semibold"
+                <div className="flex min-h-full items-center justify-center sm:p-4 text-center sm:p-10">
+                  {/* <DialogPanel className="relative transform overflow-hidden rounded-lg bg-gray-100 pb-4 text-left shadow-xl transition-all sm:my-8 w-full sm:w-full sm:max-w-7xl sm:p-0"> */}
+                  <DialogPanel
+                    className="relative transform overflow-y-auto bg-gray-100 text-left shadow-xl transition-all w-screen h-screen rounded-none sm:fixed sm:inset-0 sm:w-screen sm:h-screen sm:overflow-auto md:fixed md:inset-0 md:w-screen md:h-screen md:overflow-auto lg:relative  lg:max-w-7xl lg:w-full lg:h-auto lg:overflow-visible"
                   >
-                    Purchase Order
-                  </h2>
-                  <div className="flex gap-2">
-                    {editIdCrypt && (
-                      <PencilSquareIcon
-                        onClick={handleEditPurchaseOrder}
-                        className="h-5 w-5  cursor-pointer transition"
-                      />
-                    )}
+                    {/* <div className=" p-4 flex items-center justify-between bg-white"> */}
+                   
+                       <DialogHeader
+  heading="Sales Order"
+  headingIcon={<UserCircleIcon className="h-8 w-8 text-[#134b90]" />}
+  isEditing={isEditing}
+  setIsEditing={setIsEditing}
+  closeFunction={handleCloseForDialog}
+  editIcon={
+    editIdCrypt ? (
+      <PencilIcon className="h-4 w-4 cursor-pointer transition" />
+    ) : null
+  }
+  closeIcon={
+    <XMarkIcon className="h-4 w-4 sm:h-8 sm:w-8 font-bold" />
+  }
+/>
 
-                    <XMarkIcon
-                      onClick={handleCloseForDialog}
-                      className="h-5 w-5  cursor-pointer transition"
-                    />
-                  </div>
-                </div>
-                <div className="m-4 bg-white border rounded-md border-gray-200 p-6">
-                  <div
-                    className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 ${
-                      vendorInput ? "lg:grid-cols-4" : "lg:grid-cols-3"
-                    } gap-5 bg-gray-50 rounded-md `}
-                  >
-                    <div className="w-full col-span-1 sm:col-span-1">
-                      <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
-                        <CalendarDateRangeIcon className="h-5 w-5 text-gray-400" />
-                        <h4>
-                          Purchase Date <span className="text-red-400">*</span>
-                        </h4>
-                      </label>
-                      <input
-                        type="date"
-                        name="date"
-                        value={poInputs.date}
-                        placeholder="Purchase Date"
-                        disabled
-                        onChange={handleChangeForPurchaseOrder}
-                        className="mt-1 bg-gray-100 w-full cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins"
-                      />
-                    </div>
+                      {/* <div className="flex gap-2">
+                        {editIdCrypt && (
+                          <PencilSquareIcon
+                            onClick={handleEditPurchaseOrder}
+                            className="h-5 w-5  cursor-pointer transition"
+                          />
+                        )}
 
-                    <div className="w-full col-span-1 sm:col-span-1">
-                      <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
-                        <CalendarDateRangeIcon className="h-5 w-5 text-gray-400" />
-                        <h4>
-                          PO Number <span className="text-red-400">*</span>
-                        </h4>
-                      </label>
-                      <input
-                        type="text"
-                        name="po_number"
-                        value={poInputs.po_number}
-                        placeholder="Purchase No"
-                        disabled
-                        onChange={handleChangeForPurchaseOrder}
-                        className="mt-1 w-full bg-gray-100 cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins"
-                      />
-                    </div>
-
-                    <div className="w-full col-span-1">
-                      <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
-                        <MapPinIcon className="h-5 w-5 text-gray-400" />
-                        <h4>Area Name</h4>
-                        <span className="text-red-400">*</span>
-                      </label>
-                      <div>
-                        <Select
-                          name="area_id"
-                          options={areaDatas?.map((item) => ({
-                            value: item.id,
-                            label: item.name,
-                            id_crypt: item.id_crypt,
-                          }))}
-                          value={
-                            areaDatas
-                              ?.filter((item) => item.id === poInputs?.area_id)
-                              .map((item) => ({
-                                value: item.id,
-                                label: item.name,
-                              }))[0] || null
-                          }
-                          onChange={(selectedOption) => {
-                            console.log(selectedOption, "selectedOption");
-                            handleChangeForPurchaseOrder({
-                              target: {
-                                name: "area_id",
-                                value: selectedOption
-                                  ? selectedOption.value
-                                  : null,
-                                id_crypt: selectedOption
-                                  ? selectedOption.id_crypt
-                                  : null, // pass id_crypt here
-                              },
-                            });
-                          }}
-                          className="w-full mt-2"
-                          classNamePrefix="select"
-                          isDisabled={isEditing}
-                          menuPortalTarget={document.body} // Render in body
-                          menuPosition="fixed" // Prevent overflow
-                          styles={{
-                            menuPortal: (base) => ({ ...base, zIndex: 9999 }), // Set z-index high
-                          }}
+                        <XMarkIcon
+                          onClick={handleCloseForDialog}
+                          className="h-5 w-5  cursor-pointer transition"
                         />
-                      </div>
-                      {requiredFields?.area_id && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {requiredFields?.area_id[0]}
-                        </p>
-                      )}
-                    </div>
-
-                    {vendorInput && (
-                      <div className="w-full col-span-1">
-                        <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
-                          <UserGroupIcon className="h-5 w-5 text-gray-400" />
-                          <h4>Vendor Name</h4>
-                          <span className="text-red-400">*</span>
-                        </label>
-                        <div>
-                          <Select
-                            name="vendor_id"
-                            options={vendorDatas?.map((item) => ({
-                              value: item.id,
-                              label: item.vendor_name,
-                              id_crypt: item.id_crypt,
-                            }))}
-                            value={
-                              vendorDatas
-                                ?.filter(
-                                  (item) => item.id === poInputs?.vendor_id
-                                )
-                                .map((item) => ({
-                                  value: item.id,
-                                  label: item.vendor_name,
-                                }))[0] || null
-                            }
-                            onChange={(selectedOption) => {
-                              console.log(selectedOption, "selectedOption");
-
-                              handleChangeForPurchaseOrder({
-                                target: {
-                                  name: "vendor_id",
-                                  value: selectedOption
-                                    ? selectedOption.value
-                                    : null,
-                                  id_crypt: selectedOption
-                                    ? selectedOption.id_crypt
-                                    : null, // pass id_crypt here
-                                },
-                              });
-                            }}
-                            className="w-full mt-2"
-                            classNamePrefix="select"
-                            isDisabled={isEditing}
-                            menuPortalTarget={document.body} // Render in body
-                            menuPosition="fixed" // Prevent overflow
-                            styles={{
-                              menuPortal: (base) => ({ ...base, zIndex: 9999 }), // Set z-index high
-                            }}
-                          />
-                        </div>
-                        {requiredFields?.vendor_id && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields?.vendor_id[0]}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mt-4">
-                    {paymentTermShow && (
-                      <div>
-                        <div className="col-span-1">
-                          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            <CurrencyRupeeIcon className="h-5 w-5 text-gray-400" />
-                            <span>
-                              Payment Term{" "}
+                      </div> */}
+                    {/* </div> */}
+                    <div className=" bg-white border rounded-md border-gray-200 p-6">
+                      <div
+                        className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 ${
+                          vendorInput ? "lg:grid-cols-4" : "lg:grid-cols-3"
+                        } gap-5 bg-gray-50 rounded-md `}
+                      >
+                        <div className="w-full col-span-1 sm:col-span-1">
+                          <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
+                            <CalendarDateRangeIcon className="h-5 w-5 text-[var(--input-icon-color)]" />
+                            <h4>
+                              Sales Date{" "}
                               <span className="text-red-400">*</span>
-                            </span>
-                          </label>
-                          <Select
-                            name="payment_terms_id"
-                            options={paymentTermsData?.map((item) => ({
-                              value: item.id,
-                              label: item.name,
-                            }))}
-                            value={
-                              paymentTermsData
-                                ?.filter(
-                                  (item) =>
-                                    item.id === poInputs?.payment_terms_id
-                                )
-                                .map((item) => ({
-                                  value: item.id,
-                                  label: item.name,
-                                }))[0] || null
-                            }
-                            onChange={(selectedOption) =>
-                              handleChangeForPurchaseOrder({
-                                target: {
-                                  name: "payment_terms_id",
-                                  value: selectedOption
-                                    ? selectedOption.value
-                                    : null,
-                                },
-                              })
-                            }
-                            isDisabled
-                            className="mt-2"
-                            classNamePrefix="select"
-                            menuPortalTarget={document.body}
-                            menuPosition="fixed"
-                            styles={{
-                              control: (base) => ({
-                                ...base,
-                                backgroundColor: "#f3f4f6",
-                                cursor: "not-allowed",
-                              }),
-                              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                            }}
-                          />
-                        </div>
-                        {requiredFields.payment_terms_id && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields.payment_terms_id[0]}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {isPolishedShow && (
-                      <div>
-                        <div className="col-span-1">
-                          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            <LightBulbIcon className="h-5 w-5 text-gray-400" />
-                            <span>
-                              Polished <span className="text-red-400">*</span>
-                            </span>
-                          </label>
-                          <Select
-                            name="is_polished"
-                            options={polishedData?.map((item) => ({
-                              value: item.value,
-                              label: item.label,
-                            }))}
-                            value={
-                              polishedData
-                                ?.filter(
-                                  (item) => item.value === poInputs?.is_polished
-                                )
-                                .map((item) => ({
-                                  value: item.value,
-                                  label: item.label,
-                                }))[0] || null
-                            }
-                            onChange={(selectedOption) =>
-                              handleChangeForPurchaseOrder({
-                                target: {
-                                  name: "is_polished",
-                                  value: selectedOption
-                                    ? selectedOption.value
-                                    : null,
-                                },
-                              })
-                            }
-                            className="mt-2"
-                            classNamePrefix="select"
-                            isDisabled={isEditing}
-                            menuPortalTarget={document.body}
-                            menuPosition="fixed"
-                            styles={{
-                              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                            }}
-                          />
-                        </div>
-                        {requiredFields.is_polished && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields.is_polished[0]}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {!modeDeliveryShow && (
-                      <div>
-                        <div className="col-span-1">
-                          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            <CalendarDateRangeIcon className="h-5 w-5 text-gray-400" />
-                            <span>
-                              Mode Delivery{" "}
-                              <span className="text-red-400">*</span>
-                            </span>
-                          </label>
-                          <Select
-                            name="mode_of_delivery"
-                            options={modeOfDeliveryData?.map((item) => ({
-                              value: item.value,
-                              label: item.label,
-                            }))}
-                            value={
-                              modeOfDeliveryData
-                                ?.filter(
-                                  (item) =>
-                                    item.value === poInputs?.mode_of_delivery
-                                )
-                                .map((item) => ({
-                                  value: item.value,
-                                  label: item.label,
-                                }))[0] || null
-                            }
-                            onChange={(selectedOption) =>
-                              handleChangeForPurchaseOrder({
-                                target: {
-                                  name: "mode_of_delivery",
-                                  value: selectedOption
-                                    ? selectedOption.value
-                                    : null,
-                                },
-                              })
-                            }
-                            className="mt-2"
-                            classNamePrefix="select"
-                            isDisabled={isEditing}
-                            menuPortalTarget={document.body}
-                            menuPosition="fixed"
-                            styles={{
-                              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                            }}
-                          />
-                        </div>
-                        {requiredFields.mode_of_delivery && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields.mode_of_delivery[0]}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {expectedDeliveryShow && (
-                      <div>
-                        <div
-                          className={`col-span-1 ${
-                            poInputs.mode_of_delivery === "hand"
-                              ? "sm:col-span-2"
-                              : ""
-                          }`}
-                        >
-                          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            <CalendarDateRangeIcon className="h-5 w-5 text-gray-400" />
-                            <span>
-                              Expected Delivery{" "}
-                              <span className="text-red-400">*</span>
-                            </span>
+                            </h4>
                           </label>
                           <input
                             type="date"
-                            name="expected_delivery_date"
-                            min={new Date().toISOString().split("T")[0]}
-                            value={poInputs.expected_delivery_date}
-                            onChange={handleChangeForPurchaseOrder}
+                            name="order_date"
+                            value={poInputs.order_date}
+                            placeholder="Purchase Date"
                             disabled={isEditing}
-                            className={`mt-2 w-full ${
-                              isEditing && "cursor-not-allowed opacity-50"
-                            } border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+                            onChange={handleChangeForPurchaseOrder}
+                            className="mt-1 bg-gray-100 w-full cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins"
                           />
                         </div>
-                        {requiredFields.expected_delivery_date && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields.expected_delivery_date[0]}
-                          </p>
+
+                        <div className="w-full col-span-1 sm:col-span-1">
+                          <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
+                            <NumberedListIcon className="h-5 w-5 text-[var(--input-icon-color)]" />
+                            <h4>
+                              Sales Number <span className="text-red-400">*</span>
+                            </h4>
+                          </label>
+                          <input
+                            type="text"
+                            name="sales_order_number"
+                            value={poInputs.sales_order_number}
+                            placeholder="Purchase No"
+                            disabled
+                            onChange={handleChangeForPurchaseOrder}
+                            className="mt-1 w-full bg-gray-100 cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none font-poppins"
+                          />
+                        </div>
+
+                        <div className="w-full col-span-1">
+                          <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
+                            <UserCircleIcon className="h-5 w-5 text-[var(--input-icon-color)]" />
+                            <h4>Customer</h4>
+                            <span className="text-red-400">*</span>
+                          </label>
+                          <div>
+                            <Select
+                              name="area_id"
+                              options={customerDatas?.map((item) => ({
+                                value: item.id,
+                                label: item.name,
+                                id_crypt: item.id_crypt,
+                              }))}
+                              value={
+                                customerDatas
+                                  ?.filter(
+                                    (item) => item.id === poInputs?.area_id
+                                  )
+                                  .map((item) => ({
+                                    value: item.id,
+                                    label: item.name,
+                                  }))[0] || null
+                              }
+                              onChange={(selectedOption) => {
+                                console.log(selectedOption, "selectedOption");
+                                handleChangeForPurchaseOrder({
+                                  target: {
+                                    name: "area_id",
+                                    value: selectedOption
+                                      ? selectedOption.value
+                                      : null,
+                                    id_crypt: selectedOption
+                                      ? selectedOption.id_crypt
+                                      : null, // pass id_crypt here
+                                  },
+                                });
+                              }}
+                              className="w-full mt-2"
+                              classNamePrefix="select"
+                              isDisabled={isEditing}
+                              menuPortalTarget={document.body} // Render in body
+                              menuPosition="fixed" // Prevent overflow
+                              styles={{
+                                menuPortal: (base) => ({
+                                  ...base,
+                                  zIndex: 9999,
+                                }), // Set z-index high
+                              }}
+                            />
+                          </div>
+                          {requiredFields?.area_id && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {requiredFields?.area_id[0]}
+                            </p>
+                          )}
+                        </div>
+
+                        {vendorInput && (
+                          <div className="w-full col-span-1">
+                            <label className="flex items-center gap-2 block text-sm font-medium text-gray-700 mb-1">
+                              <UsersIcon className="h-5 w-5 text-[var(--input-icon-color)]" />
+                              <h4>Vendor Name</h4>
+                              <span className="text-red-400">*</span>
+                            </label>
+                            <div>
+                              <Select
+                                name="vendor_id"
+                                options={vendorDatas?.map((item) => ({
+                                  value: item.id,
+                                  label: item.vendor_name,
+                                  id_crypt: item.id_crypt,
+                                }))}
+                                value={
+                                  vendorDatas
+                                    ?.filter(
+                                      (item) => item.id === poInputs?.vendor_id
+                                    )
+                                    .map((item) => ({
+                                      value: item.id,
+                                      label: item.vendor_name,
+                                    }))[0] || null
+                                }
+                                onChange={(selectedOption) => {
+                                  console.log(selectedOption, "selectedOption");
+
+                                  handleChangeForPurchaseOrder({
+                                    target: {
+                                      name: "vendor_id",
+                                      value: selectedOption
+                                        ? selectedOption.value
+                                        : null,
+                                      id_crypt: selectedOption
+                                        ? selectedOption.id_crypt
+                                        : null, // pass id_crypt here
+                                    },
+                                  });
+                                }}
+                                className="w-full mt-2"
+                                classNamePrefix="select"
+                                isDisabled={isEditing}
+                                menuPortalTarget={document.body} // Render in body
+                                menuPosition="fixed" // Prevent overflow
+                                styles={{
+                                  menuPortal: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                  }), // Set z-index high
+                                }}
+                              />
+                            </div>
+                            {requiredFields?.vendor_id && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {requiredFields?.vendor_id[0]}
+                              </p>
+                            )}
+                          </div>
                         )}
                       </div>
-                    )}
 
-                    {logisticsShow && (
-                      <div>
-                        <div className="col-span-1">
-                          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            <CalendarDateRangeIcon className="h-5 w-5 text-gray-400" />
-                            <span>
-                              Logistics <span className="text-red-400">*</span>
-                            </span>
-                          </label>
-                          {/* <input
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mt-4">
+                        {paymentTermShow && (
+                          <div>
+                            <div className="col-span-1">
+                              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                <CurrencyRupeeIcon className="h-5 w-5 text-[var(--input-icon-color)]" />
+                                <span>
+                                  Payment Term{" "}
+                                  <span className="text-red-400">*</span>
+                                </span>
+                              </label>
+                              <Select
+                                name="payment_terms_id"
+                                options={paymentTermsData?.map((item) => ({
+                                  value: item.id,
+                                  label: item.name,
+                                }))}
+                                value={
+                                  paymentTermsData
+                                    ?.filter(
+                                      (item) =>
+                                        item.id === poInputs?.payment_terms_id
+                                    )
+                                    .map((item) => ({
+                                      value: item.id,
+                                      label: item.name,
+                                    }))[0] || null
+                                }
+                                onChange={(selectedOption) =>
+                                  handleChangeForPurchaseOrder({
+                                    target: {
+                                      name: "payment_terms_id",
+                                      value: selectedOption
+                                        ? selectedOption.value
+                                        : null,
+                                    },
+                                  })
+                                }
+                                isDisabled
+                                className="mt-2"
+                                classNamePrefix="select"
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                styles={{
+                                  control: (base) => ({
+                                    ...base,
+                                    backgroundColor: "#f3f4f6",
+                                    cursor: "not-allowed",
+                                  }),
+                                  menuPortal: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                  }),
+                                }}
+                              />
+                            </div>
+                            {requiredFields.payment_terms_id && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {requiredFields.payment_terms_id[0]}
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        {isPolishedShow && (
+                          <div>
+                            <div className="col-span-1">
+                              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                <LightBulbIcon className="h-5 w-5 text-[var(--input-icon-color)]" />
+                                <span>
+                                  Polished{" "}
+                                  <span className="text-red-400">*</span>
+                                </span>
+                              </label>
+                              <Select
+                                name="is_polished"
+                                options={polishedData?.map((item) => ({
+                                  value: item.value,
+                                  label: item.label,
+                                }))}
+                                value={
+                                  polishedData
+                                    ?.filter(
+                                      (item) =>
+                                        item.value === poInputs?.is_polished
+                                    )
+                                    .map((item) => ({
+                                      value: item.value,
+                                      label: item.label,
+                                    }))[0] || null
+                                }
+                                onChange={(selectedOption) =>
+                                  handleChangeForPurchaseOrder({
+                                    target: {
+                                      name: "is_polished",
+                                      value: selectedOption
+                                        ? selectedOption.value
+                                        : null,
+                                    },
+                                  })
+                                }
+                                className="mt-2"
+                                classNamePrefix="select"
+                                isDisabled={isEditing}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                styles={{
+                                  menuPortal: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                  }),
+                                }}
+                              />
+                            </div>
+                            {requiredFields.is_polished && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {requiredFields.is_polished[0]}
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        {!modeDeliveryShow && (
+                          <div>
+                            <div className="col-span-1">
+                              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                <CalendarDateRangeIcon className="h-5 w-5 text-[var(--input-icon-color)]" />
+                                <span>
+                                  Mode Delivery{" "}
+                                  <span className="text-red-400">*</span>
+                                </span>
+                              </label>
+                              <Select
+                                name="mode_of_delivery"
+                                options={modeOfDeliveryData?.map((item) => ({
+                                  value: item.value,
+                                  label: item.label,
+                                }))}
+                                value={
+                                  modeOfDeliveryData
+                                    ?.filter(
+                                      (item) =>
+                                        item.value ===
+                                        poInputs?.mode_of_delivery
+                                    )
+                                    .map((item) => ({
+                                      value: item.value,
+                                      label: item.label,
+                                    }))[0] || null
+                                }
+                                onChange={(selectedOption) =>
+                                  handleChangeForPurchaseOrder({
+                                    target: {
+                                      name: "mode_of_delivery",
+                                      value: selectedOption
+                                        ? selectedOption.value
+                                        : null,
+                                    },
+                                  })
+                                }
+                                className="mt-2"
+                                classNamePrefix="select"
+                                isDisabled={isEditing}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                styles={{
+                                  menuPortal: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                  }),
+                                }}
+                              />
+                            </div>
+                            {requiredFields.mode_of_delivery && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {requiredFields.mode_of_delivery[0]}
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        {expectedDeliveryShow && (
+                          <div>
+                            <div
+                              className={`col-span-1 ${
+                                poInputs.mode_of_delivery === "hand"
+                                  ? "sm:col-span-2"
+                                  : ""
+                              }`}
+                            >
+                              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                <CalendarDateRangeIcon className="h-5 w-5 text-[var(--input-icon-color)]" />
+                                <span>
+                                  Expected Delivery{" "}
+                                  <span className="text-red-400">*</span>
+                                </span>
+                              </label>
+                              <input
+                                type="date"
+                                name="expected_delivery_date"
+                                min={new Date().toISOString().split("T")[0]}
+                                value={poInputs.expected_delivery_date}
+                                onChange={handleChangeForPurchaseOrder}
+                                disabled={isEditing}
+                                className={`mt-2 w-full ${
+                                  isEditing && "cursor-not-allowed opacity-50"
+                                } border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+                              />
+                            </div>
+                            {requiredFields.expected_delivery_date && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {requiredFields.expected_delivery_date[0]}
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        {logisticsShow && (
+                          <div>
+                            <div className="col-span-1">
+                              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                <CalendarDateRangeIcon className="h-5 w-5 text-[var(--input-icon-color)]" />
+                                <span>
+                                  Logistics{" "}
+                                  <span className="text-red-400">*</span>
+                                </span>
+                              </label>
+                              {/* <input
                           type="text"
                           name="logistics"
                           value={poInputs.logistics}
@@ -1729,239 +1762,241 @@ function PurchaseOrderCreate() {
                           placeholder="Logistics"
                         /> */}
 
-                          <Select
-                            name="logistics"
-                            options={logisticsDatas?.map((item) => ({
-                              value: item.id,
-                              label: item.name,
-                            }))}
-                            value={
-                              logisticsDatas
-                                ?.filter(
-                                  (item) => item.id === poInputs?.logistics
-                                )
-                                .map((item) => ({
+                              <Select
+                                name="logistics"
+                                options={logisticsDatas?.map((item) => ({
                                   value: item.id,
                                   label: item.name,
-                                }))[0] || null
-                            }
-                            onChange={(selectedOption) =>
-                              handleChangeForPurchaseOrder({
-                                target: {
-                                  name: "logistics",
-                                  value: selectedOption
-                                    ? selectedOption.value
-                                    : null,
-                                },
-                              })
-                            }
-                            className="mt-2"
-                            classNamePrefix="select"
-                            isDisabled={isEditing}
-                            menuPortalTarget={document.body}
-                            menuPosition="fixed"
-                            styles={{
-                              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                            }}
-                          />
-                        </div>
-                        {requiredFields.logistics && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields.logistics[0]}
-                          </p>
+                                }))}
+                                value={
+                                  logisticsDatas
+                                    ?.filter(
+                                      (item) => item.id === poInputs?.logistics
+                                    )
+                                    .map((item) => ({
+                                      value: item.id,
+                                      label: item.name,
+                                    }))[0] || null
+                                }
+                                onChange={(selectedOption) =>
+                                  handleChangeForPurchaseOrder({
+                                    target: {
+                                      name: "logistics",
+                                      value: selectedOption
+                                        ? selectedOption.value
+                                        : null,
+                                    },
+                                  })
+                                }
+                                className="mt-2"
+                                classNamePrefix="select"
+                                isDisabled={isEditing}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                styles={{
+                                  menuPortal: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                  }),
+                                }}
+                              />
+                            </div>
+                            {requiredFields.logistics && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {requiredFields.logistics[0]}
+                              </p>
+                            )}
+                          </div>
                         )}
                       </div>
-                    )}
-                  </div>
 
-                  {/* items */}
-                  <div className="mt-8">
-                    {itemsInputOpen && (
-                      <>
-                        <h4 className="text-md font-semibold text-gray-400 mb-2">
-                          Items
-                        </h4>
-                        {requiredFields["items.0.item_id"] && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {requiredFields["items.0.item_id"][0]}
-                          </p>
-                        )}
-                        <div className="mt-4 flow-root">
-                          <div className="overflow-x-auto border border-gray-300 rounded-md">
-                            <div className="min-w-[1200px] lg:min-w-full">
-                              {/* Header */}
-                              <div
-                                className={`grid grid-cols-12 gap-2 border-b border-gray-300 bg-gray-100`}
-                              >
-                                <div className="py-3.5 pl-4 text-left text-sm font-semibold text-gray-900 col-span-2">
-                                  Items
-                                </div>
-                                <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
-                                  GST %
-                                </div>
-
-                                <div
-                                  className={`py-3.5 px-1 text-left text-sm font-semibold text-gray-900 ${
-                                    showInward ? "col-span-1" : "col-span-2"
-                                  } `}
-                                >
-                                  Item Price
-                                </div>
-                                <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
-                                  Quantity
-                                </div>
-                                {showInward && (
-                                  <>
-                                    <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
-                                      Inward Quantity
+                      {/* items */}
+                      <div className="mt-8">
+                        {/* {itemsInputOpen && ( */}
+                          <>
+                            <h4 className="text-md font-semibold text-gray-400 mb-2">
+                              Items
+                            </h4>
+                            {requiredFields["items.0.item_id"] && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {requiredFields["items.0.item_id"][0]}
+                              </p>
+                            )}
+                            <div className="mt-4 flow-root">
+                              <div className="overflow-x-auto border border-gray-300 rounded-md">
+                                <div className="min-w-[1200px] lg:min-w-full">
+                                  {/* Header */}
+                                  <div
+                                    className={`grid grid-cols-12 gap-2 border-b border-gray-300 bg-gray-100`}
+                                  >
+                                    <div className="py-3.5 pl-4 text-left text-sm font-semibold text-gray-900 col-span-2">
+                                      Items
                                     </div>
                                     <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
-                                      Pending Quantity
+                                      GST %
                                     </div>
-                                  </>
-                                )}
 
-                                {/* <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
+                                    <div
+                                      className={`py-3.5 px-1 text-left text-sm font-semibold text-gray-900 ${
+                                        showInward ? "col-span-1" : "col-span-2"
+                                      } `}
+                                    >
+                                      Item Price
+                                    </div>
+                                    <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
+                                      Quantity
+                                    </div>
+                                    {showInward && (
+                                      <>
+                                        <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
+                                          Inward Quantity
+                                        </div>
+                                        <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
+                                          Pending Quantity
+                                        </div>
+                                      </>
+                                    )}
+
+                                    {/* <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
                                   check percent
                                 </div> */}
-                                <div
-                                  className={`py-3.5 px-1 text-left text-sm font-semibold text-gray-900 ${
-                                    showInward ? "col-span-1" : "col-span-2"
-                                  }`}
-                                >
-                                  Q * P Total
-                                </div>
-                                <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
-                                  Discount Price
-                                </div>
-                                <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
-                                  After discount
-                                </div>
+                                    <div
+                                      className={`py-3.5 px-1 text-left text-sm font-semibold text-gray-900 ${
+                                        showInward ? "col-span-1" : "col-span-2"
+                                      }`}
+                                    >
+                                      Q * P Total
+                                    </div>
+                                    <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
+                                      Discount Price
+                                    </div>
+                                    <div className="py-3.5 px-1 text-left text-sm font-semibold text-gray-900 col-span-1">
+                                      After discount
+                                    </div>
 
-                                <div className="py-3.5 pr-4 text-center text-sm font-semibold text-gray-900 col-span-2">
-                                  Actions
-                                </div>
-                              </div>
+                                    <div className="py-3.5 pr-4 text-center text-sm font-semibold text-gray-900 col-span-2">
+                                      Actions
+                                    </div>
+                                  </div>
 
-                              {/* Body */}
-                              <div className={`divide-y divide-gray-200`}>
-                                {poInputs.items.map((item, index) => (
-                                  <>
-                                    {item.item_status == 0 && (
-                                      <p className="text-red-500 text-sm mt-1 p-1">
-                                        Pending
-                                      </p>
-                                    )}
-                                    {/* <div
+                                  {/* Body */}
+                                  <div className={`divide-y divide-gray-200`}>
+                                    {poInputs.items.map((item, index) => (
+                                      <>
+                                        {/* {item.item_status == 0 && (
+                                          <p className="text-red-500 text-sm mt-1 p-1">
+                                            Pending
+                                          </p>
+                                        )} */}
+                                        {/* <div
                                       key={index}
                                       className={`grid  grid-cols-12 gap-2 items-center py-3  ${pendingStatusError && "bg-red-100"}`}
                                     > */}
-                                    <div
-                                      key={index}
-                                      className={`grid grid-cols-12 gap-2 items-center py-3 ${
-                                        item.item_status == 0
-                                          ? "border border-red-400"
-                                          : "bg-white"
-                                      }`}
-                                    >
-                                      {/* Item */}
-                                      <div className="pl-4 col-span-2">
-                                        <Select
-                                          name="item_id"
-                                          options={itemDatas?.map((item) => ({
-                                            value: item.id,
-                                            label: item.item_name,
-                                            id_crypt: item.id_crypt,
-                                          }))}
-                                          // options={
-                                          //   itemDatas
-                                          //     ?.filter((item) => {
-                                          //       // Get all selected item IDs except the current row
-                                          //       const selectedItemIds =
-                                          //         poInputs.items
-                                          //           ?.filter(
-                                          //             (_, i) => i !== index
-                                          //           )
-                                          //           ?.map((i) => i.item_id);
+                                        <div
+                                          key={index}
+                                          className={`grid grid-cols-12 gap-2 items-center py-3 `}
+                                        >
+                                          {/* Item */}
+                                          <div className="pl-4 col-span-2">
+                                            <Select
+                                              name="item_id"
+                                              options={itemDatas?.map(
+                                                (item) => ({
+                                                  value: item.id,
+                                                  label: item.item_name,
+                                                  id_crypt: item.id_crypt,
+                                                })
+                                              )}
+                                              // options={
+                                              //   itemDatas
+                                              //     ?.filter((item) => {
+                                              //       // Get all selected item IDs except the current row
+                                              //       const selectedItemIds =
+                                              //         poInputs.items
+                                              //           ?.filter(
+                                              //             (_, i) => i !== index
+                                              //           )
+                                              //           ?.map((i) => i.item_id);
 
-                                          //       // Only show items not already selected in other rows
-                                          //       return !selectedItemIds.includes(
-                                          //         item.id
-                                          //       );
-                                          //     })
-                                          //     ?.map((item) => ({
-                                          //       value: item.id,
-                                          //       label: item.item_name,
-                                          //       id_crypt: item.id_crypt,
-                                          //     })) || []
-                                          // }
-                                          value={
-                                            itemDatas
-                                              ?.filter(
-                                                (item) =>
-                                                  item.id ==
-                                                  poInputs.items[index].item_id
-                                              )
-                                              .map((item) => ({
-                                                value: item.id,
-                                                label: item.item_name,
-                                              }))[0] || null
-                                          }
-                                          onChange={(selectedOption) => {
-                                            handleChangeForPurchaseOrder(
-                                              {
-                                                target: {
-                                                  name: "item_id",
-                                                  value: selectedOption
-                                                    ? selectedOption.value
-                                                    : null,
-                                                  id_crypt: selectedOption
-                                                    ? selectedOption.id_crypt
-                                                    : null,
-                                                },
-                                              },
-                                              index // Pass the index here too
-                                            );
-                                          }}
-                                          className=""
-                                          classNamePrefix="select"
-                                          isDisabled={isEditing}
-                                          menuPortalTarget={document.body} // Render in body
-                                          menuPosition="fixed" // Prevent overflow
-                                          styles={{
-                                            menuPortal: (base) => ({
-                                              ...base,
-                                              zIndex: 9999,
-                                            }), // Set z-index high
-                                          }}
-                                        />
-                                      </div>
+                                              //       // Only show items not already selected in other rows
+                                              //       return !selectedItemIds.includes(
+                                              //         item.id
+                                              //       );
+                                              //     })
+                                              //     ?.map((item) => ({
+                                              //       value: item.id,
+                                              //       label: item.item_name,
+                                              //       id_crypt: item.id_crypt,
+                                              //     })) || []
+                                              // }
+                                              value={
+                                                itemDatas
+                                                  ?.filter(
+                                                    (item) =>
+                                                      item.id ==
+                                                      poInputs.items[index]
+                                                        .item_id
+                                                  )
+                                                  .map((item) => ({
+                                                    value: item.id,
+                                                    label: item.item_name,
+                                                  }))[0] || null
+                                              }
+                                              onChange={(selectedOption) => {
+                                                handleChangeForPurchaseOrder(
+                                                  {
+                                                    target: {
+                                                      name: "item_id",
+                                                      value: selectedOption
+                                                        ? selectedOption.value
+                                                        : null,
+                                                      id_crypt: selectedOption
+                                                        ? selectedOption.id_crypt
+                                                        : null,
+                                                    },
+                                                  },
+                                                  index // Pass the index here too
+                                                );
+                                              }}
+                                              className=""
+                                              classNamePrefix="select"
+                                              isDisabled={isEditing}
+                                              menuPortalTarget={document.body} // Render in body
+                                              menuPosition="fixed" // Prevent overflow
+                                              styles={{
+                                                menuPortal: (base) => ({
+                                                  ...base,
+                                                  zIndex: 9999,
+                                                }), // Set z-index high
+                                              }}
+                                            />
+                                          </div>
 
-                                      <div className="col-span-1">
-                                        <input
-                                          type="text"
-                                          name="gst_percent"
-                                          value={
-                                            item.gst_percent
-                                              ? item.gst_percent + "%"
-                                              : ""
-                                          }
-                                          placeholder="GST"
-                                          disabled
-                                          onChange={(e) =>
-                                            handleChangeForPurchaseOrder(
-                                              e,
-                                              index
-                                            )
-                                          } // Pass the index
-                                          className={`w-full ${
-                                            isEditing && "bg-gray-100"
-                                          } cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none`}
-                                        />
-                                      </div>
-                                      {/* CGST Percent */}
+                                          <div className="col-span-1">
+                                            <input
+                                              type="text"
+                                              name="gst_percent"
+                                              value={
+                                                item.gst_percent
+                                                  ? item.gst_percent + "%"
+                                                  : ""
+                                              }
+                                              placeholder="GST"
+                                              disabled
+                                              onChange={(e) =>
+                                                handleChangeForPurchaseOrder(
+                                                  e,
+                                                  index
+                                                )
+                                              } // Pass the index
+                                              className={`w-full ${
+                                                isEditing && "bg-gray-100"
+                                              } cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none`}
+                                            />
+                                          </div>
+                                          {/* CGST Percent */}
 
-                                      {/* {gstShow && (
+                                          {/* {gstShow && (
                                         <>
                                           <div className="col-span-1">
                                             <input
@@ -2011,7 +2046,7 @@ function PurchaseOrderCreate() {
                                         </>
                                       )} */}
 
-                                      {/* {!gstShow && (
+                                          {/* {!gstShow && (
                                         <div className="col-span-1">
                                           <input
                                             type="text"
@@ -2036,63 +2071,19 @@ function PurchaseOrderCreate() {
                                         </div>
                                       )} */}
 
-                                      {/* Purchase Price */}
-                                      <div
-                                        className={`${
-                                          showInward
-                                            ? "col-span-1"
-                                            : "col-span-2"
-                                        }`}
-                                      >
-                                        <input
-                                          type="number"
-                                          name="item_price"
-                                          value={item.item_price}
-                                          placeholder="0.00"
-                                          disabled={isEditing}
-                                          onChange={(e) =>
-                                            handleChangeForPurchaseOrder(
-                                              e,
-                                              index
-                                            )
-                                          } // Pass the index
-                                          className={`w-full ${
-                                            isEditing && "bg-gray-100"
-                                          }  rounded-md border text-right border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-                                        />
-                                      </div>
-
-                                      {/* Quantity */}
-                                      <div className={`col-span-1`}>
-                                        <input
-                                          type="number"
-                                          name="quantity"
-                                          value={item.quantity}
-                                          placeholder="Quantity"
-                                          disabled={isEditing}
-                                          onChange={(e) =>
-                                            handleChangeForPurchaseOrder(
-                                              e,
-                                              index
-                                            )
-                                          } // Pass the index
-                                          className={`w-full ${
-                                            isEditing && "bg-gray-100"
-                                          }  rounded-md border text-right border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-                                        />
-                                      </div>
-
-                                      {/* Inward Quantity */}
-
-                                      {showInward && (
-                                        <>
-                                          <div className={`col-span-1`}>
+                                          {/* Purchase Price */}
+                                          <div
+                                            className={`${
+                                              showInward
+                                                ? "col-span-1"
+                                                : "col-span-2"
+                                            }`}
+                                          >
                                             <input
                                               type="number"
-                                              name="inward_quantity"
-                                              value={item.inward_quantity}
-                                              placeholder="Inward Quantity"
-                                              readOnly
+                                              name="item_price"
+                                              value={item.item_price}
+                                              placeholder="0.00"
                                               disabled={isEditing}
                                               onChange={(e) =>
                                                 handleChangeForPurchaseOrder(
@@ -2106,16 +2097,14 @@ function PurchaseOrderCreate() {
                                             />
                                           </div>
 
-                                          {/* Pending Quantity */}
-
+                                          {/* Quantity */}
                                           <div className={`col-span-1`}>
                                             <input
                                               type="number"
-                                              name="pending_quantity"
-                                              value={item.pending_quantity}
-                                              placeholder="Pending Quantity"
+                                              name="quantity"
+                                              value={item.quantity}
+                                              placeholder="Quantity"
                                               disabled={isEditing}
-                                              readOnly
                                               onChange={(e) =>
                                                 handleChangeForPurchaseOrder(
                                                   e,
@@ -2127,81 +2116,127 @@ function PurchaseOrderCreate() {
                                               }  rounded-md border text-right border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                                             />
                                           </div>
-                                        </>
-                                      )}
 
-                                      {/* <div className="">
+                                          {/* Inward Quantity */}
+
+                                          {showInward && (
+                                            <>
+                                              <div className={`col-span-1`}>
+                                                <input
+                                                  type="number"
+                                                  name="inward_quantity"
+                                                  value={item.inward_quantity}
+                                                  placeholder="Inward Quantity"
+                                                  readOnly
+                                                  disabled={isEditing}
+                                                  onChange={(e) =>
+                                                    handleChangeForPurchaseOrder(
+                                                      e,
+                                                      index
+                                                    )
+                                                  } // Pass the index
+                                                  className={`w-full ${
+                                                    isEditing && "bg-gray-100"
+                                                  }  rounded-md border text-right border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                                                />
+                                              </div>
+
+                                              {/* Pending Quantity */}
+
+                                              <div className={`col-span-1`}>
+                                                <input
+                                                  type="number"
+                                                  name="pending_quantity"
+                                                  value={item.pending_quantity}
+                                                  placeholder="Pending Quantity"
+                                                  disabled={isEditing}
+                                                  readOnly
+                                                  onChange={(e) =>
+                                                    handleChangeForPurchaseOrder(
+                                                      e,
+                                                      index
+                                                    )
+                                                  } // Pass the index
+                                                  className={`w-full ${
+                                                    isEditing && "bg-gray-100"
+                                                  }  rounded-md border text-right border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                                                />
+                                              </div>
+                                            </>
+                                          )}
+
+                                          {/* <div className="">
                                         
                                       </div> */}
-                                      <div
-                                        className={`${
-                                          editIdCrypt
-                                            ? "col-span-1"
-                                            : "col-span-2"
-                                        }`}
-                                      >
-                                        <input
-                                          type="text"
-                                          name="discount_percent"
-                                          value={item.discount_percent}
-                                          placeholder="Discount Percent"
-                                          onChange={(e) =>
-                                            handleChangeForPurchaseOrder(
-                                              e,
-                                              index
-                                            )
-                                          } // Pass the index
-                                          disabled
-                                          className="w-full bg-gray-100 hidden text-right cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none"
-                                        />
-                                        <input
-                                          type="text"
-                                          name="total_item_price"
-                                          value={item.total_item_price}
-                                          placeholder="Total Amount"
-                                          disabled
-                                          onChange={(e) =>
-                                            handleChangeForPurchaseOrder(
-                                              e,
-                                              index
-                                            )
-                                          } // Pass the index
-                                          className="w-full bg-gray-100 text-right cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none"
-                                        />
-                                      </div>
-                                      <div className="col-span-1">
-                                        <input
-                                          type="text"
-                                          name="discount_price"
-                                          value={item.discount_price}
-                                          placeholder="After Discount"
-                                          disabled
-                                          onChange={(e) =>
-                                            handleChangeForPurchaseOrder(
-                                              e,
-                                              index
-                                            )
-                                          } // Pass the index
-                                          className="w-full bg-gray-100 text-right cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none"
-                                        />
-                                      </div>
-                                      <div className="col-span-1">
-                                        <input
-                                          type="text"
-                                          name="discounted_amount"
-                                          value={item.discounted_amount}
-                                          placeholder="Discounted"
-                                          disabled
-                                          onChange={(e) =>
-                                            handleChangeForPurchaseOrder(
-                                              e,
-                                              index
-                                            )
-                                          } // Pass the index
-                                          className="w-full bg-gray-100 text-right cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none"
-                                        />
-                                      </div>
-                                      {/* <div className="col-span-1">
+                                          <div
+                                            className={`${
+                                              editIdCrypt
+                                                ? "col-span-1"
+                                                : "col-span-2"
+                                            }`}
+                                          >
+                                            <input
+                                              type="text"
+                                              name="discount_percent"
+                                              value={item.discount_percent}
+                                              placeholder="Discount Percent"
+                                              onChange={(e) =>
+                                                handleChangeForPurchaseOrder(
+                                                  e,
+                                                  index
+                                                )
+                                              } // Pass the index
+                                              disabled
+                                              className="w-full bg-gray-100 hidden text-right cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none"
+                                            />
+                                            <input
+                                              type="text"
+                                              name="total_item_price"
+                                              value={item.total_item_price}
+                                              placeholder="Total Amount"
+                                              disabled
+                                              onChange={(e) =>
+                                                handleChangeForPurchaseOrder(
+                                                  e,
+                                                  index
+                                                )
+                                              } // Pass the index
+                                              className="w-full bg-gray-100 text-right cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none"
+                                            />
+                                          </div>
+                                          <div className="col-span-1">
+                                            <input
+                                              type="text"
+                                              name="discount_price"
+                                              value={item.discount_price}
+                                              placeholder="After Discount"
+                                              disabled
+                                              onChange={(e) =>
+                                                handleChangeForPurchaseOrder(
+                                                  e,
+                                                  index
+                                                )
+                                              } // Pass the index
+                                              className="w-full bg-gray-100 text-right cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none"
+                                            />
+                                          </div>
+                                          <div className="col-span-1">
+                                            <input
+                                              type="text"
+                                              name="discounted_amount"
+                                              value={item.discounted_amount}
+                                              placeholder="Discounted"
+                                              disabled
+                                              onChange={(e) =>
+                                                handleChangeForPurchaseOrder(
+                                                  e,
+                                                  index
+                                                )
+                                              } // Pass the index
+                                              className="w-full bg-gray-100 text-right cursor-not-allowed rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none"
+                                            />
+                                          </div>
+                                          {/* <div className="col-span-1">
                                         <input
                                           type="text"
                                           name="overall_item_price"
@@ -2218,170 +2253,208 @@ function PurchaseOrderCreate() {
                                         />
                                       </div> */}
 
-                                      {/* Camera Icon and Actions */}
+                                          {/* Camera Icon and Actions */}
 
-                                      <div className="flex flex-wrap  justify-center items-center col-span-2 gap-2 sm:gap-3">
-                                        {/* Capture Image */}
-                                        <button
-                                          type="button"
-                                          disabled={isEditing}
-                                          className="p-2 rounded-full hover:bg-gray-200"
-                                          onClick={() =>
-                                            handleUploadImages(index)
-                                          }
-                                          data-tooltip-id={`tooltip-camera-${index}`}
-                                          data-tooltip-content="Turn On Camera"
-                                        >
-                                          <CameraIcon
-                                            className={`h-5 w-5 text-blue-600 ${
-                                              isEditing
-                                                ? "cursor-not-allowed"
-                                                : "cursor-pointer "
-                                            }`}
-                                          />
-                                          <Tooltip
-                                            id={`tooltip-camera-${index}`}
-                                            place="top"
-                                            effect="solid"
-                                          />
-                                        </button>
-
-                                        {/* Upload from Device */}
-                                        <input
-                                          type="file"
-                                          multiple
-                                          disabled={isEditing}
-                                          id={`fileInput-${index}`}
-                                          className="hidden"
-                                          onChange={(e) =>
-                                            handleUploadDeviceImages(e, index)
-                                          }
-                                          accept="image/*"
-                                        />
-                                        <label
-                                          htmlFor={`fileInput-${index}`}
-                                          className="p-2 rounded-full hover:bg-gray-200"
-                                          data-tooltip-id={`tooltip-upload-${index}`}
-                                          data-tooltip-content="Upload from Device"
-                                        >
-                                          <ArrowUpCircleIcon
-                                            className={`h-5 w-5 ${
-                                              isEditing
-                                                ? "cursor-not-allowed"
-                                                : "cursor-pointer "
-                                            } text-blue-600`}
-                                          />
-                                          <Tooltip
-                                            id={`tooltip-upload-${index}`}
-                                            place="top"
-                                            effect="solid"
-                                          />
-                                        </label>
-
-                                        {/* Remove Item */}
-                                        <button
-                                          type="button"
-                                          disabled={isEditing}
-                                          className={`p-2 rounded-full hover:bg-gray-200 ${
-                                            isEditing
-                                              ? "cursor-not-allowed"
-                                              : ""
-                                          }`}
-                                          onClick={() =>
-                                            handleRemoveItem(index)
-                                          }
-                                          data-tooltip-id={`tooltip-remove-${index}`}
-                                          data-tooltip-content="Remove This Item"
-                                        >
-                                          <XMarkIcon
-                                            className={`h-5 w-5  ${
-                                              isEditing
-                                                ? "cursor-not-allowed"
-                                                : "cursor-pointer "
-                                            } text-red-600`}
-                                          />
-                                          <Tooltip
-                                            id={`tooltip-remove-${index}`}
-                                            place="top"
-                                            effect="solid"
-                                          />
-                                        </button>
-
-                                        {/* Toggle Captured Images */}
-                                        {/* {item.images &&
-                                          item.images.length > 0 && ( */}
-                                        {((item.images &&
-                                          item.images.length > 0) ||
-                                          (item.uploaded_images &&
-                                            item.uploaded_images.length >
-                                              0)) && (
-                                          <>
-                                            <ChevronDownIcon
-                                              data-tooltip-id={`toggle-tooltip-${index}`}
-                                              data-tooltip-content={
-                                                showCapturedImages[index]
-                                                  ? "Close"
-                                                  : "Open Captured Images"
+                                          <div className="flex flex-wrap  justify-center items-center col-span-2 gap-2 sm:gap-3">
+                                            {/* Capture Image */}
+                                            <button
+                                              type="button"
+                                              disabled={isEditing}
+                                              className="p-2 rounded-full hover:bg-gray-200"
+                                              onClick={() =>
+                                                handleUploadImages(index)
                                               }
-                                              className={`h-6 w-6 text-blue-600 cursor-pointer transition-transform duration-200 rounded-full hover:bg-gray-200 ${
-                                                showCapturedImages[index]
-                                                  ? "rotate-180"
+                                              data-tooltip-id={`tooltip-camera-${index}`}
+                                              data-tooltip-content="Turn On Camera"
+                                            >
+                                              <CameraIcon
+                                                className={`h-5 w-5 text-blue-600 ${
+                                                  isEditing
+                                                    ? "cursor-not-allowed"
+                                                    : "cursor-pointer "
+                                                }`}
+                                              />
+                                              <Tooltip
+                                                id={`tooltip-camera-${index}`}
+                                                place="top"
+                                                effect="solid"
+                                              />
+                                            </button>
+
+                                            {/* Upload from Device */}
+                                            <input
+                                              type="file"
+                                              multiple
+                                              disabled={isEditing}
+                                              id={`fileInput-${index}`}
+                                              className="hidden"
+                                              onChange={(e) =>
+                                                handleUploadDeviceImages(
+                                                  e,
+                                                  index
+                                                )
+                                              }
+                                              accept="image/*"
+                                            />
+                                            <label
+                                              htmlFor={`fileInput-${index}`}
+                                              className="p-2 rounded-full hover:bg-gray-200"
+                                              data-tooltip-id={`tooltip-upload-${index}`}
+                                              data-tooltip-content="Upload from Device"
+                                            >
+                                              <ArrowUpCircleIcon
+                                                className={`h-5 w-5 ${
+                                                  isEditing
+                                                    ? "cursor-not-allowed"
+                                                    : "cursor-pointer "
+                                                } text-blue-600`}
+                                              />
+                                              <Tooltip
+                                                id={`tooltip-upload-${index}`}
+                                                place="top"
+                                                effect="solid"
+                                              />
+                                            </label>
+
+                                            {/* Remove Item */}
+                                            <button
+                                              type="button"
+                                              disabled={isEditing}
+                                              className={`p-2 rounded-full hover:bg-gray-200 ${
+                                                isEditing
+                                                  ? "cursor-not-allowed"
                                                   : ""
                                               }`}
                                               onClick={() =>
-                                                handleShowImages(index)
+                                                handleRemoveItem(index)
                                               }
-                                            />
-                                            <Tooltip
-                                              id={`toggle-tooltip-${index}`}
-                                              place="top"
-                                              effect="solid"
-                                            />
-                                          </>
-                                        )}
-                                      </div>
-                                    </div>
+                                              data-tooltip-id={`tooltip-remove-${index}`}
+                                              data-tooltip-content="Remove This Item"
+                                            >
+                                              <XMarkIcon
+                                                className={`h-5 w-5  ${
+                                                  isEditing
+                                                    ? "cursor-not-allowed"
+                                                    : "cursor-pointer "
+                                                } text-red-600`}
+                                              />
+                                              <Tooltip
+                                                id={`tooltip-remove-${index}`}
+                                                place="top"
+                                                effect="solid"
+                                              />
+                                            </button>
 
-                                    <div className="flex justify-end ">
-                                      <div className="flex flex-wrap gap-2 mt-2 px-4">
-                                        {showCapturedImages[index] && (
-                                          <>
-                                            <div className="flex flex-wrap gap-2 mt-2 mb-4">
-                                              {(item.images || []).map(
-                                                (imgSrc, imgIndex) => (
+                                            {/* Toggle Captured Images */}
+                                            {/* {item.images &&
+                                          item.images.length > 0 && ( */}
+                                            {((item.images &&
+                                              item.images.length > 0) ||
+                                              (item.uploaded_images &&
+                                                item.uploaded_images.length >
+                                                  0)) && (
+                                              <>
+                                                <ChevronDownIcon
+                                                  data-tooltip-id={`toggle-tooltip-${index}`}
+                                                  data-tooltip-content={
+                                                    showCapturedImages[index]
+                                                      ? "Close"
+                                                      : "Open Captured Images"
+                                                  }
+                                                  className={`h-6 w-6 text-blue-600 cursor-pointer transition-transform duration-200 rounded-full hover:bg-gray-200 ${
+                                                    showCapturedImages[index]
+                                                      ? "rotate-180"
+                                                      : ""
+                                                  }`}
+                                                  onClick={() =>
+                                                    handleShowImages(index)
+                                                  }
+                                                />
+                                                <Tooltip
+                                                  id={`toggle-tooltip-${index}`}
+                                                  place="top"
+                                                  effect="solid"
+                                                />
+                                              </>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        <div className="flex justify-end ">
+                                          <div className="flex flex-wrap gap-2 mt-2 px-4">
+                                            {showCapturedImages[index] && (
+                                              <>
+                                                <div className="flex flex-wrap gap-2 mt-2 mb-4">
+                                                  {(item.images || []).map(
+                                                    (imgSrc, imgIndex) => (
+                                                      <div
+                                                        key={imgIndex}
+                                                        className="relative w-24 h-24 rounded overflow-hidden border border-gray-300"
+                                                      >
+                                                        {saveBtn === "save" ? (
+                                                          <img
+                                                            src={imgSrc}
+                                                            alt={`Captured ${imgIndex}`}
+                                                            className="w-full h-full object-cover"
+                                                          />
+                                                        ) : (
+                                                          <img
+                                                            src={
+                                                              imgSrc.startsWith(
+                                                                "data:"
+                                                              )
+                                                                ? imgSrc
+                                                                : axios.defaults
+                                                                    .baseURL +
+                                                                  "/storage/app/public/" +
+                                                                  imgSrc
+                                                            }
+                                                            alt={`Captured ${imgIndex}`}
+                                                            className="w-full h-full object-cover"
+                                                          />
+                                                        )}
+
+                                                        <button
+                                                          type="button"
+                                                          onClick={() =>
+                                                            handleRemoveCapturedImage(
+                                                              index,
+                                                              imgIndex
+                                                            )
+                                                          }
+                                                          className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-700"
+                                                        >
+                                                          <XMarkIcon className="w-3 h-3" />
+                                                        </button>
+                                                      </div>
+                                                    )
+                                                  )}
+                                                </div>
+
+                                                {(
+                                                  item.uploaded_images || []
+                                                ).map((file, fileIndex) => (
                                                   <div
-                                                    key={imgIndex}
-                                                    className="relative w-24 h-24 rounded overflow-hidden border border-gray-300"
+                                                    key={fileIndex}
+                                                    className="relative w-24 h-24 rounded overflow-hidden border border-gray-300 mt-2"
                                                   >
-                                                    {saveBtn === "save" ? (
-                                                      <img
-                                                        src={imgSrc}
-                                                        alt={`Captured ${imgIndex}`}
-                                                        className="w-full h-full object-cover"
-                                                      />
-                                                    ) : (
-                                                      <img
-                                                        src={
-                                                          imgSrc.startsWith(
-                                                            "data:"
-                                                          )
-                                                            ? imgSrc
-                                                            : axios.defaults
-                                                                .baseURL +
-                                                              "/storage/app/public/" +
-                                                              imgSrc
-                                                        }
-                                                        alt={`Captured ${imgIndex}`}
-                                                        className="w-full h-full object-cover"
-                                                      />
-                                                    )}
-
+                                                    <img
+                                                      src={
+                                                        typeof file === "string"
+                                                          ? file // Base64 string, use directly
+                                                          : URL.createObjectURL(
+                                                              file
+                                                            ) // File object, create URL
+                                                      }
+                                                      alt={`Uploaded ${fileIndex}`}
+                                                      className="w-full h-full object-cover"
+                                                    />
                                                     <button
                                                       type="button"
                                                       onClick={() =>
-                                                        handleRemoveCapturedImage(
+                                                        handleRemoveUploadedImage(
                                                           index,
-                                                          imgIndex
+                                                          fileIndex
                                                         )
                                                       }
                                                       className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-700"
@@ -2389,134 +2462,81 @@ function PurchaseOrderCreate() {
                                                       <XMarkIcon className="w-3 h-3" />
                                                     </button>
                                                   </div>
-                                                )
-                                              )}
-                                            </div>
-
-                                            {(item.uploaded_images || []).map(
-                                              (file, fileIndex) => (
-                                                <div
-                                                  key={fileIndex}
-                                                  className="relative w-24 h-24 rounded overflow-hidden border border-gray-300 mt-2"
-                                                >
-                                                  <img
-                                                    src={
-                                                      typeof file === "string"
-                                                        ? file // Base64 string, use directly
-                                                        : URL.createObjectURL(
-                                                            file
-                                                          ) // File object, create URL
-                                                    }
-                                                    alt={`Uploaded ${fileIndex}`}
-                                                    className="w-full h-full object-cover"
-                                                  />
-                                                  <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                      handleRemoveUploadedImage(
-                                                        index,
-                                                        fileIndex
-                                                      )
-                                                    }
-                                                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-700"
-                                                  >
-                                                    <XMarkIcon className="w-3 h-3" />
-                                                  </button>
-                                                </div>
-                                              )
+                                                ))}
+                                              </>
                                             )}
-                                          </>
-                                        )}
-                                      </div>
-                                      {cameraOpen && activeIndex === index && (
-                                        // <div className="flex  items-center gap-4 p-6">
-                                        //   <div className="">
-                                        //     <video
-                                        //       id={`video-preview-${index}`}
-                                        //       className="w-48 h-36 rounded border border-gray-300"
-                                        //       autoPlay
-                                        //       playsInline
-                                        //     ></video>
+                                          </div>
+                                          {cameraOpen &&
+                                            activeIndex === index && (
 
-                                        //     <button
-                                        //       type="button"
-                                        //       onClick={() =>
-                                        //         handleCaptureImage(index)
-                                        //       }
-                                        //       className="bg-[#134b90] text-white px-4 py-2 rounded hover:bg-blue-700 mt-2"
-                                        //     >
-                                        //       <CameraIcon className="h-5 w-5" />
-                                        //     </button>
-                                        //   </div>
-                                        // </div>
+                                              <CameraSection
+                                                index={index}
+                                                poInputs={poInputs}
+                                                setPoInputs={setPoInputs}
+                                                showCapturedImages={
+                                                  showCapturedImages
+                                                }
+                                                setShowCapturedImages={
+                                                  setShowCapturedImages
+                                                }
+                                                setCameraStream={(stream) => {
+                                                  cameraStreamRef.current =
+                                                    stream;
+                                                }}
+                                              />
+                                            )}
+                                        </div>
+                                      </>
+                                    ))}
+                                  </div>
 
-                                        <CameraSection
-                                          index={index}
-                                          poInputs={poInputs}
-                                          setPoInputs={setPoInputs}
-                                          showCapturedImages={
-                                            showCapturedImages
-                                          }
-                                          setShowCapturedImages={
-                                            setShowCapturedImages
-                                          }
-                                          setCameraStream={(stream) => {
-                                            cameraStreamRef.current = stream;
-                                          }}
-                                        />
-                                      )}
+                                  {/* Add New Item */}
+                                  {!isEditing && (
+                                    <div className="mt-4 flex items-center px-4 mb-4">
+                                      <UserPlusIcon
+                                        className="h-5 w-5 text-blue-600 mr-2 cursor-pointer"
+                                        onClick={handleAddItems}
+                                      />
+                                      <span
+                                        className="text-sm text-gray-700 cursor-pointer"
+                                        onClick={handleAddItems}
+                                      >
+                                        Add New Item
+                                      </span>
                                     </div>
-                                  </>
-                                ))}
-                              </div>
-
-                              {/* Add New Item */}
-                              {!isEditing && (
-                                <div className="mt-4 flex items-center px-4 mb-4">
-                                  <UserPlusIcon
-                                    className="h-5 w-5 text-blue-600 mr-2 cursor-pointer"
-                                    onClick={handleAddItems}
-                                  />
-                                  <span
-                                    className="text-sm text-gray-700 cursor-pointer"
-                                    onClick={handleAddItems}
-                                  >
-                                    Add New Item
-                                  </span>
+                                  )}
                                 </div>
-                              )}
+                              </div>
+                            </div>
+                          </>
+                        {/* // )} */}
+                      </div>
+
+                      {/* Amount View */}
+
+                      {overallTotalDialog && (
+                        <div className="grid grid-cols-1 sm:grid-cols-4 sm:gap-4 rounded overflow-hidden mt-4">
+                          <div className="col-span-2">
+                            <div className="col-span-full mt-2">
+                              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                <DocumentTextIcon className="h-5 w-5 text-[var(--input-icon-color)]" />
+                                <span>Remarks</span>
+                              </label>
+                              <textarea
+                                name="remarks"
+                                disabled={isEditing}
+                                value={poInputs.remarks}
+                                onChange={handleChangeForPurchaseOrder}
+                                className={`mt-1 ${
+                                  isEditing ? "bg-gray-100" : "bg-white"
+                                } w-full  border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+                                placeholder="Remarks"
+                              />
                             </div>
                           </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Amount View */}
-
-                  {overallTotalDialog && (
-                    <div className="grid grid-cols-1 sm:grid-cols-4 sm:gap-4 rounded overflow-hidden mt-4">
-                      <div className="col-span-2">
-                        <div className="col-span-full mt-2">
-                          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            <DocumentTextIcon className="h-5 w-5 text-gray-400" />
-                            <span>Remarks</span>
-                          </label>
-                          <textarea
-                            name="remarks"
-                            disabled={isEditing}
-                            value={poInputs.remarks}
-                            onChange={handleChangeForPurchaseOrder}
-                            className={`mt-1 ${
-                              isEditing ? "bg-gray-100" : "bg-white"
-                            } w-full  border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
-                            placeholder="Remarks"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-span-2 border border-gray-200 mt-8 rounded-md ">
-                        <div className="p-2 sm:p-4 border-b border-gray-200">
-                          {/* <div className="flex items-center justify-between">
+                          <div className="col-span-2 border border-gray-200 mt-8 rounded-md ">
+                            <div className="p-2 sm:p-4 border-b border-gray-200">
+                              {/* <div className="flex items-center justify-between">
                             <label className="text-sm font-medium text-gray-700">
                               GST ₹
                             </label>
@@ -2529,7 +2549,7 @@ function PurchaseOrderCreate() {
                             />
                           </div> */}
 
-                          {/* {groupedIgstPercentAndAmount.map(
+                              {/* {groupedIgstPercentAndAmount.map(
                             (item, index) => (
                               <div
                                 key={index}
@@ -2544,39 +2564,39 @@ function PurchaseOrderCreate() {
                             )
                           )} */}
 
-                          <div className="p-2  flex items-center justify-between border-b border-gray-200">
-                            <label className="text-sm font-medium text-gray-700">
-                              Sub Total ₹
-                            </label>
-                            <input
-                              type="text"
-                              name="order_amount"
-                              value={poInputs.order_amount || 0}
-                              readOnly
-                              className="text-right bg-gray-50  rounded  py-1 w-32"
-                            />
-                          </div>
-
-                          <div className="p-2  flex items-center justify-between border-gray-200">
-                            <div>
-                              <label className="text-sm flex items-center gap-2 text-gray-700">
-                                Discount
+                              <div className="p-2  flex items-center justify-between border-b border-gray-200">
+                                <label className="text-sm font-medium text-gray-700">
+                                  Sub Total ₹
+                                </label>
                                 <input
                                   type="text"
-                                  name="discount_percent"
-                                  value={poInputs.discount_percent}
-                                  onChange={handleChangeForPurchaseOrder}
-                                  className="px-1 text-right border border-gray-300  rounded  py-1 w-22"
+                                  name="order_amount"
+                                  value={poInputs.order_amount || 0}
+                                  readOnly
+                                  className="text-right bg-gray-50  rounded  py-1 w-32"
                                 />
-                              </label>
-                              {showDiscountError && (
-                                <span className="text-yellow-500 text-sm">
-                                  The discount value is below Requirement.
-                                </span>
-                              )}
-                            </div>
+                              </div>
 
-                            {/* <input
+                              <div className="p-2  flex items-center justify-between border-gray-200">
+                                <div>
+                                  <label className="text-sm flex items-center gap-2 text-gray-700">
+                                    Discount
+                                    <input
+                                      type="text"
+                                      name="discount_percent"
+                                      value={poInputs.discount_percent}
+                                      onChange={handleChangeForPurchaseOrder}
+                                      className="px-1 text-right border border-gray-300  rounded  py-1 w-22"
+                                    />
+                                  </label>
+                                  {showDiscountError && (
+                                    <span className="text-yellow-500 text-sm">
+                                      The discount value is below Requirement.
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* <input
                               type="text"
                               name="discount_percent"
                               value={`${poInputs.discount_percent || 0} %`}
@@ -2584,70 +2604,70 @@ function PurchaseOrderCreate() {
                               readOnly
                               className="text-right bg-gray-50  rounded  py-1 w-32"
                             /> */}
-                            <input
-                              type="text"
-                              name="discount_amount"
-                              value={poInputs.discount_amount || 0}
-                              readOnly
-                              className="text-right bg-gray-50  rounded  py-1 w-22"
-                            />
-                          </div>
+                                <input
+                                  type="text"
+                                  name="discount_amount"
+                                  value={poInputs.discount_amount || 0}
+                                  readOnly
+                                  className="text-right bg-gray-50  rounded  py-1 w-22"
+                                />
+                              </div>
 
-                          <div className="p-2  flex items-center justify-between border-b border-gray-200">
-                            <label className="text-sm flex items-center gap-2 text-gray-700">
-                              <p className=" inline-flex items-center rounded-md bg-yellow-50 px-3 py-1 text-sm font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">
-                                {`Required discount ${poInputs.minimum_discount} %`}
-                              </p>
-                            </label>
-                          </div>
+                              <div className="p-2  flex items-center justify-between border-b border-gray-200">
+                                <label className="text-sm flex items-center gap-2 text-gray-700">
+                                  <p className=" inline-flex items-center rounded-md bg-yellow-50 px-3 py-1 text-sm font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">
+                                    {`Required discount ${poInputs.minimum_discount} %`}
+                                  </p>
+                                </label>
+                              </div>
 
-                          <div className="p-2 flex items-center justify-between  border-gray-200">
-                            <label className="text-sm font-medium text-gray-700">
-                              After Discount Amount
-                            </label>
-                            <input
-                              type="text"
-                              name="discounted_total"
-                              value={poInputs.discounted_total || 0}
-                              readOnly
-                              className="text-right bg-gray-50  rounded  py-1 w-32"
-                            />
-                          </div>
+                              <div className="p-2 flex items-center justify-between  border-gray-200">
+                                <label className="text-sm font-medium text-gray-700">
+                                  After Discount Amount
+                                </label>
+                                <input
+                                  type="text"
+                                  name="discounted_total"
+                                  value={poInputs.discounted_total || 0}
+                                  readOnly
+                                  className="text-right bg-gray-50  rounded  py-1 w-32"
+                                />
+                              </div>
 
-                          <div className="bg-white">
-                            <div className="space-y-3 ">
-                              {console.log(
-                                groupedIgstPercentAndAmount,
-                                "groupedIgstPercentAndAmount"
-                              )}
-                              {groupedIgstPercentAndAmount.map(
-                                (item, index) => (
-                                  console.log(item, "item"),
-                                  (
-                                    <div
-                                      key={index}
-                                      className="grid grid-cols-2 sm:grid-cols-2 gap-4 sm:gap-4 items-center text-sm bg-gray-50 p-3 "
-                                    >
-                                      <div className="flex items-center gap-6">
-                                        <span className="capitalize">
-                                          {item?.tax_type}
-                                        </span>
-                                        <span>{item.percent}%</span>
-                                      </div>
+                              <div className="bg-white">
+                                <div className="space-y-3 ">
+                                  {console.log(
+                                    groupedIgstPercentAndAmount,
+                                    "groupedIgstPercentAndAmount"
+                                  )}
+                                  {groupedIgstPercentAndAmount.map(
+                                    (item, index) => (
+                                      console.log(item, "item"),
+                                      (
+                                        <div
+                                          key={index}
+                                          className="grid grid-cols-2 sm:grid-cols-2 gap-4 sm:gap-4 items-center text-sm bg-gray-50 p-3 "
+                                        >
+                                          <div className="flex items-center gap-6">
+                                            <span className="capitalize">
+                                              {item?.tax_type}
+                                            </span>
+                                            <span>{item.percent}%</span>
+                                          </div>
 
-                                      <div className="flex items-center justify-end">
-                                        <span className="">
-                                          {item.total_amount}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  )
-                                )
-                              )}
-                            </div>
-                          </div>
+                                          <div className="flex items-center justify-end">
+                                            <span className="">
+                                              {item.total_amount}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      )
+                                    )
+                                  )}
+                                </div>
+                              </div>
 
-                          {/* {groupedIgstPercentAndAmounts.length > 0 && (
+                              {/* {groupedIgstPercentAndAmounts.length > 0 && (
                             groupedIgstPercentAndAmounts.map(
                               (item, index) => (
                                 <div
@@ -2680,7 +2700,7 @@ function PurchaseOrderCreate() {
                             )
                           )} */}
 
-                          {/* {gstShow && (
+                              {/* {gstShow && (
                             <div className="mt-2 sm:ml-auto md:ml-0 w-1/2">
                               <div className="flex items-center justify-between mb-1">
                                 <label className="text-sm font-medium text-gray-700">
@@ -2708,9 +2728,9 @@ function PurchaseOrderCreate() {
                               </div>
                             </div>
                           )} */}
-                        </div>
+                            </div>
 
-                        {/* {!gstShow && (
+                            {/* {!gstShow && (
                           <div className="p-2 sm:p-4 flex items-center justify-between border-b border-gray-200">
                             <label className="text-sm font-medium text-gray-700">
                               IGST ₹
@@ -2725,61 +2745,65 @@ function PurchaseOrderCreate() {
                           </div>
                         )} */}
 
-                        <div className="p-2 sm:p-4 flex items-center justify-between">
-                          <label className="text-sm font-medium text-gray-700">
-                            Total ₹
-                          </label>
-                          <input
-                            type="text"
-                            name="total_amount"
-                            value={"₹ " + poInputs.total_amount || 0}
-                            readOnly
-                            className="text-right bg-gray-50  rounded px-2 py-1 w-32 font-semibold"
-                          />
+                            <div className="p-2 sm:p-4 flex items-center justify-between">
+                              <label className="text-sm font-medium text-gray-700">
+                                Total ₹
+                              </label>
+                              <input
+                                type="text"
+                                name="total_amount"
+                                value={"₹ " + poInputs.total_amount || 0}
+                                readOnly
+                                className="text-right bg-gray-50  rounded px-2 py-1 w-32 font-semibold"
+                              />
+                            </div>
+                          </div>
                         </div>
+                      )}
+
+                      {/* Buttons */}
+
+                      <div className="mt-2 flex items-center justify-end gap-x-4 p-5">
+                        <button
+                          type="button"
+                          onClick={() => setOpenDialogForPurchaseOrder(false)}
+                          className="text-sm cursor-pointer font-medium text-gray-700 hover:text-gray-900"
+                        >
+                          Cancel
+                        </button>
+                        {saveBtn === "save" ? (
+                          // <button
+                          //   type="submit"
+                          //   // disabled={isSubmitting}
+                          //   onClick={handleSubmitForPurchaseOrder}
+                          //   className="inline-flex cursor-pointer items-center rounded-md bg-[#134b90] px-4 py-2 text-sm font-medium text-white hover:bg-[#134b90] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
+                          // >
+                          //   Save
+                          // </button>
+                          <SaveButton
+                            saveFunction={handleSubmitForPurchaseOrder}
+                          />
+                        ) : (
+                          <button
+                            type="submit"
+                            // disabled={isSubmitting}
+                            onClick={handleUpdateForPurchaseOrder}
+                            className="inline-flex cursor-pointer items-center rounded-md bg-[#134b90] px-4 py-2 text-sm font-medium text-white hover:bg-[#134b90] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
+                          >
+                            Update
+                          </button>
+                        )}
                       </div>
                     </div>
-                  )}
-
-                  {/* Buttons */}
-
-                  <div className="mt-2 flex items-center justify-end gap-x-4 p-5">
-                    <button
-                      type="button"
-                      onClick={() => setOpenDialogForPurchaseOrder(false)}
-                      className="text-sm cursor-pointer font-medium text-gray-700 hover:text-gray-900"
-                    >
-                      Cancel
-                    </button>
-                    {saveBtn === "save" ? (
-                      // <button
-                      //   type="submit"
-                      //   // disabled={isSubmitting}
-                      //   onClick={handleSubmitForPurchaseOrder}
-                      //   className="inline-flex cursor-pointer items-center rounded-md bg-[#134b90] px-4 py-2 text-sm font-medium text-white hover:bg-[#134b90] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
-                      // >
-                      //   Save
-                      // </button>
-                      <SaveButton saveFunction={handleSubmitForPurchaseOrder} />
-                    ) : (
-                      <button
-                        type="submit"
-                        // disabled={isSubmitting}
-                        onClick={handleUpdateForPurchaseOrder}
-                        className="inline-flex cursor-pointer items-center rounded-md bg-[#134b90] px-4 py-2 text-sm font-medium text-white hover:bg-[#134b90] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
-                      >
-                        Update
-                      </button>
-                    )}
-                  </div>
+                  </DialogPanel>
                 </div>
-              </DialogPanel>
-            </div>
-          </div>
-        </Dialog>
+              </div>
+            </Dialog>
+          )}
+        </>
       )}
     </>
   );
 }
 
-export default PurchaseOrderCreate;
+export default SalesDialogBox;

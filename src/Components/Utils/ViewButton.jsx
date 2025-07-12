@@ -12,7 +12,7 @@ function ViewButton({onView,item}) {
     <>
       <button
       id="view"
-      className="bg-[var(--hd-bg)]  cursor-pointer font-semibold px-2 py-1 rounded text-xs  hover:text-[var(--hover-text)] hover:bg-purple-800"
+      className="bg-[var(--addbutton-bgcolor)]  cursor-pointer font-semibold px-2 py-1 rounded text-xs  hover:text-[var(--hover-text)] hover:bg-[var(--addbutton-bgcolor)]"
       onClick={(e) => onView(e, item.id_crypt)}
     >
           <GrView className="text-[var(--hd-bg)]   text-lg text-white  cursor-pointer "/>

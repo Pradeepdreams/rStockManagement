@@ -1,4 +1,5 @@
 import React from "react";
+import { Tooltip } from "react-tooltip";
 
 function DialogHeader({
   heading,
@@ -21,12 +22,21 @@ function DialogHeader({
 
         <div className="flex gap-2">
           {isEditing && (
+            <>
             <div
+            id="edit"
               onClick={() => setIsEditing(false)}
               className="bg-blue-100 text-blue-600 p-2 rounded-md cursor-pointer hover:bg-blue-200"
             >
               {editIcon}
             </div>
+            <Tooltip
+              anchorSelect="#edit"
+              place="top"
+              content="Edit"
+              className="!text-xs !bg-black !rounded !px-2 !py-1"
+            />
+            </>
           )}
           <div
             onClick={closeFunction}

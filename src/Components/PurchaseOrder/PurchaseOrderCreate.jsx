@@ -17,7 +17,9 @@ import {
   DocumentTextIcon,
   LightBulbIcon,
   MapPinIcon,
+  PencilIcon,
   PencilSquareIcon,
+  UserCircleIcon,
   UserGroupIcon,
   UserPlusIcon,
   XMarkIcon,
@@ -39,6 +41,7 @@ import { toast } from "react-toastify";
 import { useSearch } from "../Context/SearchContext";
 import { all } from "axios";
 import { BsCartPlusFill } from "react-icons/bs";
+import DialogHeader from "../Utils/DialogHeader";
 
 function PurchaseOrderCreate() {
   const { collapsed } = useOutletContext();
@@ -1358,7 +1361,7 @@ function PurchaseOrderCreate() {
       lg:relative lg:rounded-lg lg:max-w-7xl lg:w-full lg:h-auto lg:overflow-visible
     "
               >
-                <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
+                {/* <div className="bg-[var(--dialog-bgcolor)] text-white p-4 flex items-center justify-between">
                   <h2
                     style={{ fontFamily: "poppins" }}
                     className="font-semibold"
@@ -1378,8 +1381,25 @@ function PurchaseOrderCreate() {
                       className="h-5 w-5  cursor-pointer transition"
                     />
                   </div>
-                </div>
-                <div className="m-4 bg-white border rounded-md border-gray-200 p-6">
+                </div> */}
+
+                  <DialogHeader
+                  heading="Purchase Order"
+                  headingIcon={<UserCircleIcon className="h-8 w-8 text-[#134b90]" />}
+                  isEditing={isEditing}
+                  setIsEditing={setIsEditing}
+                  closeFunction={handleCloseForDialog}
+                  editIcon={
+                    isEditing ? (
+                      <PencilIcon className="h-4 w-4 cursor-pointer transition" />
+                    ) : null
+                  }
+                  closeIcon={
+                    <XMarkIcon className="h-4 w-4 sm:h-8 sm:w-8 font-bold" />
+                  }
+                />
+
+                <div className="bg-white border rounded-md border-gray-200 p-6">
                   <div
                     className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 ${
                       vendorInput ? "lg:grid-cols-4" : "lg:grid-cols-3"

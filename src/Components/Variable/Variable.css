@@ -19,12 +19,14 @@
   --hd-bg:#4b0082;
   --login-bg:#ead7f86b;
   /* --table-header-text:#ffffff; */
-  --table-header-text:#030712;
+  --table-header-text:#120503;
   --table-header-bg:#e5e7eb;
    /* --dialog-bgcolor:#4b0082; */
-   /* --dialog-bgcolor:#afb2ce; */
+   --dialog-bgcolor:#2511d6b2;
+   --input-icon-color:#1187d6;
    /* --savebutton-bgcolor:#4b0082; */
    --savebutton-bgcolor:#2511d6;
+   --addbutton-bgcolor:#2511d6;
 
   /* fonts */
   --font-display: 'Poppins', sans-serif;
