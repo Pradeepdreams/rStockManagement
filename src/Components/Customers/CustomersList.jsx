@@ -95,6 +95,22 @@ function CustomersList({
     gst_registration_type_id: customerEditData.gst_registration_type_id,
    
       });
+
+      const customerContactDetails = customerEditData.customer_contact_details;
+
+     
+
+     setCustomerContactDetails(
+  customerContactDetails.map((item) => ({
+    name: item.name,
+    phone_no: item.phone_no,
+    email: item.email,
+    designation: item.designation,
+  }))
+);
+
+
+
     } catch (error) {
       if (error.response?.status === 401) {
         localStorage.removeItem("token");

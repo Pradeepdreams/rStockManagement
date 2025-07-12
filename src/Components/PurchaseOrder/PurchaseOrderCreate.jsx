@@ -5,7 +5,6 @@ import { useOutletContext } from "react-router-dom";
 import "react-tooltip/dist/react-tooltip.css";
 import SaveButton from "../Utils/SaveButton";
 
-
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import {
   ArrowDownCircleIcon,
@@ -678,11 +677,24 @@ function PurchaseOrderCreate() {
             },
             params: { po_flag },
           });
+
+           const responseForItems = await axios.get(`public/api/items/list`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "X-Branch-Id": branchIds[0],
+            },
+         
+          });
+
+          console.log(responseForItems, "items");
+          
+
           setGstShow(
             response.data.gst_applicable == 1 &&
               response.data.gst_in?.startsWith("33")
           );
-          setItemDatas(response.data.items);
+          // setItemDatas(response.data.items);
+          setItemDatas(responseForItems.data);
           setPoInputs((prev) => ({
             ...prev,
             payment_terms_id: response.data.payment_term_id,
@@ -843,7 +855,9 @@ function PurchaseOrderCreate() {
             },
             params: { po_flag },
           });
-          itemApiData = response.data.original.category;
+          console.log(response, "item_id");
+          
+          itemApiData = response.data.original;
         } catch (error) {
           toast.error(error.response?.data?.message || "Item error");
         }
@@ -1383,9 +1397,11 @@ function PurchaseOrderCreate() {
                   </div>
                 </div> */}
 
-                  <DialogHeader
+                <DialogHeader
                   heading="Purchase Order"
-                  headingIcon={<UserCircleIcon className="h-8 w-8 text-[#134b90]" />}
+                  headingIcon={
+                    <UserCircleIcon className="h-8 w-8 text-[#134b90]" />
+                  }
                   isEditing={isEditing}
                   setIsEditing={setIsEditing}
                   closeFunction={handleCloseForDialog}
